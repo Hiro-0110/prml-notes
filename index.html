@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>PRML 第1章 まとめプリント — 行間を埋めた初学者向け解説</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Bishop『パターン認識と機械学習(PRML)』第1章を、本がなくても読み通せるよう行間を埋めて解説した初学者向けのまとめ。15枚の自作図と具体例つき。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PRML 第1章 まとめプリント — 行間を埋めた初学者向け解説">
+<meta property="og:description" content="PRML 第1章を本なしで読み通せるよう、行間を埋め、具体例と15枚の自作図で解説した初学者向けまとめ。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    tags: 'none'
+  },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+:root {
+  --bg: #fdfcf8;
+  --fg: #1a1a1a;
+  --muted: #555;
+  --accent: #c54033;
+  --accent-bg: #fef5f3;
+  --border: #d8d2c4;
+  --code-bg: #f4f1ea;
+  --link: #1f5d9c;
+  --link-hover: #c54033;
+  --callout-info: #2a73b5;
+  --callout-info-bg: #ecf3fb;
+  --callout-warn: #b58108;
+  --callout-warn-bg: #fdf6dd;
+  --callout-key: #2d8b57;
+  --callout-key-bg: #ecf6ee;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Hiragino Sans', 'Yu Gothic', 'Noto Sans CJK JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.78;
+  color: var(--fg);
+  background: var(--bg);
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.4em 1.5em 6em;
+  font-feature-settings: "palt";
+}
+
+header.title-banner {
+  border-bottom: 4px solid var(--accent);
+  margin-bottom: 1.4em;
+  padding-bottom: 0.6em;
+}
+header.title-banner h1 {
+  font-size: 1.95em;
+  margin: 0 0 0.2em;
+  letter-spacing: 0.01em;
+}
+header.title-banner .subtitle {
+  color: var(--muted);
+  font-size: 1.02em;
+}
+
+h2 {
+  font-size: 1.42em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.2em;
+  margin-top: 2.5em;
+  margin-bottom: 0.8em;
+}
+h3 {
+  font-size: 1.12em;
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+  color: #333;
+}
+h4 {
+  font-size: 1.0em;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+  color: #444;
+}
+h2, h3, h4 {
+  scroll-margin-top: 2.4em;  /* TOCアンカーで飛んだ時に上端ぴったりにしない */
+}
+
+mjx-container { vertical-align: -0.1ex; }
+mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 0.2em 0;
+}
+
+p { margin: 0.65em 0; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px dotted var(--link); }
+a:hover { color: var(--link-hover); border-bottom-style: solid; }
+a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 2px; }
+
+code {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', 'Consolas', monospace;
+  background: var(--code-bg);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.92em;
+}
+pre {
+  background: var(--code-bg);
+  padding: 0.95em 1.1em;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  line-height: 1.55;
+  font-size: 0.91em;
+  margin: 1em 0;
+}
+pre code { background: transparent; padding: 0; border-radius: 0; font-size: 1em; }
+
+table {
+  border-collapse: collapse;
+  margin: 1.2em 0;
+  width: 100%;
+  font-size: 0.97em;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.5em 0.8em;
+  vertical-align: top;
+}
+th {
+  background: #f0ead8;
+  font-weight: 600;
+  text-align: left;
+}
+th[scope="row"] {
+  background: #f7f3e6;
+  font-weight: 600;
+}
+
+blockquote {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-bg);
+  padding: 0.6em 1.1em;
+  margin: 1em 0;
+  color: var(--muted);
+  border-radius: 0 4px 4px 0;
+}
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+
+ul, ol { padding-left: 1.6em; margin: 0.5em 0; }
+li { margin: 0.18em 0; }
+
+figure.figure {
+  margin: 1.8em 0;
+  text-align: center;
+}
+figure.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: white;
+  padding: 6px;
+}
+figure.figure figcaption {
+  font-size: 0.93em;
+  color: var(--muted);
+  margin-top: 0.6em;
+  line-height: 1.5;
+}
+
+.callout {
+  padding: 0.85em 1.1em;
+  margin: 1em 0;
+  border-radius: 4px;
+  border-left: 4px solid;
+}
+.callout .label {
+  font-weight: 700;
+  font-size: 0.92em;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2em;
+  display: block;
+}
+.callout p:first-of-type { margin-top: 0.3em; }
+.callout p:last-of-type { margin-bottom: 0.3em; }
+
+/* 色覚多様性配慮: 色だけでなくボーダー線種でも3種を判別可能に (画面でも) */
+.callout.gap {
+  background: var(--callout-info-bg);
+  border-color: var(--callout-info);
+  border-left-style: solid;
+}
+.callout.gap .label { color: var(--callout-info); }
+
+.callout.exercise {
+  background: var(--callout-warn-bg);
+  border-color: var(--callout-warn);
+  border-left-style: dashed;
+}
+.callout.exercise .label { color: var(--callout-warn); }
+
+.callout.key {
+  background: var(--callout-key-bg);
+  border-color: var(--callout-key);
+  border-left-style: double;
+  border-left-width: 6px;
+}
+.callout.key .label { color: var(--callout-key); }
+
+nav.toc {
+  background: #f4ede0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1em 1.6em;
+  margin: 1.5em 0 2.2em;
+  font-size: 0.96em;
+}
+nav.toc .toc-title {
+  font-weight: 700;
+  margin-bottom: 0.3em;
+}
+nav.toc ul {
+  list-style: none;
+  padding-left: 0.5em;
+  margin: 0.3em 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15em 1.5em;
+}
+nav.toc li { margin: 0.1em 0; }
+nav.toc a { border-bottom: none; }
+nav.toc a:hover { text-decoration: underline; }
+
+.exercise-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 0.7em;
+  margin: 1em 0;
+}
+.exercise-card {
+  border: 1px solid var(--border);
+  border-left: 4px solid #b58108;
+  border-radius: 4px;
+  padding: 0.8em 1.1em;
+  background: #fffdf5;
+}
+.exercise-card .ex-head {
+  font-weight: 700;
+  color: #8b6300;
+  margin-bottom: 0.3em;
+}
+.exercise-card .ex-problem {
+  background: #f4ede0;
+  border-left: 3px solid #b58108;
+  padding: 0.55em 0.85em;
+  border-radius: 0 3px 3px 0;
+  margin: 0.55em 0;
+  font-size: 0.94em;
+  line-height: 1.65;
+}
+.exercise-card .ex-problem .plabel {
+  font-weight: 700;
+  color: #8b6300;
+  display: block;
+  font-size: 0.85em;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.15em;
+}
+.exercise-card .ex-hint,
+.exercise-card .ex-solution {
+  margin-top: 0.55em;
+}
+.exercise-card .ex-hint .hlabel,
+.exercise-card .ex-solution .slabel {
+  font-weight: 700;
+  font-size: 0.88em;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.25em;
+}
+.exercise-card .ex-hint .hlabel { color: #555; }
+.exercise-card .ex-solution {
+  background: #f3f7f1;
+  border-left: 3px solid #4a8a4a;
+  padding: 0.65em 0.95em;
+  border-radius: 0 3px 3px 0;
+}
+.exercise-card .ex-solution .slabel { color: #2d6b2d; }
+.exercise-card .ex-solution .step {
+  font-weight: 600;
+  color: #2d6b2d;
+  display: inline-block;
+  margin-right: 0.2em;
+}
+
+.muted { color: var(--muted); font-size: 0.94em; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2em 0;
+}
+
+footer {
+  margin-top: 4em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.92em;
+}
+
+@media print {
+  body { max-width: none; padding: 1.5em; font-size: 10.5pt; line-height: 1.55; }
+  /* 致命的: callout 背景色を印刷時にも維持 (色覚補強のため border-style も多重化) */
+  * { -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important; }
+  h2, h3 { break-after: avoid; page-break-after: avoid; }
+  figure.figure { break-inside: avoid; page-break-inside: avoid; }
+  figure.figure img { max-width: 80%; }
+  pre, table, .callout, .exercise-card { break-inside: avoid; page-break-inside: avoid; }
+  /* 色覚多様性配慮: ボーダースタイルでも3種類のcalloutを判別可能に */
+  .callout { border-left-width: 6px; padding-left: 1.2em; }
+  .callout.gap      { border-left-style: solid; }
+  .callout.key      { border-left-style: double; border-left-width: 7px; }
+  .callout.exercise { border-left-style: dashed; }
+  nav.toc { display: none; }
+  a { color: var(--fg); border-bottom: none; }
+  a[href]::after { content: ""; }
+  /* 致命的: 長い表示数式は画面では overflow-x:auto で横スクロールできるが
+     紙ではスクロール不可。SVG を紙幅に収めて全体が見えるようにする */
+  mjx-container[display="true"] { overflow-x: visible !important; max-width: 100% !important; }
+  mjx-container[display="true"] svg { max-width: 100% !important; height: auto !important; }
+}
+
+@media (max-width: 600px) {
+  nav.toc ul { grid-template-columns: 1fr; }
+  .exercise-list { grid-template-columns: 1fr; }
+  body { padding: 1.4em 1em 4em; }
+  h2 { font-size: 1.3em; }
+  /* モバイルで table と pre が画面外に逃げないように */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  pre { font-size: 0.85em; }
+}
+</style>
+</head>
+<body>
+
+<header class="title-banner">
+  <h1>PRML 第1章 まとめプリント</h1>
+  <div class="subtitle">行間を埋めた初学者向け解説 ＋ 演習 1.1 / 1.12 / 1.20 / 1.27 / 1.31 / 1.35 の伴走</div>
+</header>
+
+<blockquote>
+<p><strong>このまとめの目的:</strong> <strong>本が手元になくても、 このページだけで</strong> Bishop『パターン認識と機械学習』第1章を 行間に詰まらず 理解できるようにすること。 必要な式・図・具体例は すべてこの中に入れてあります。 式番号は英語版・日本語版の PRML と完全一致するので、 本を持っている人は そのまま対応づけて読めます。</p>
+</blockquote>
+
+<nav class="toc">
+<div class="toc-title">目次</div>
+<ul>
+  <li><a href="#prep">事前準備 — 数学の小辞典</a></li>
+  <li><a href="#sec0">0. 全体図</a></li>
+  <li><a href="#sec1">1. §1.1 多項式回帰</a></li>
+  <li><a href="#sec2">2. §1.2 確率論の言語</a></li>
+  <li><a href="#sec3">3. §1.2.3 ベイズ的確率</a></li>
+  <li><a href="#sec4">4. §1.2.4 ガウス分布</a></li>
+  <li><a href="#sec5">5. §1.2.5-6 曲線フィッティング再訪</a></li>
+  <li><a href="#sec6">6. §1.3 モデル選択</a></li>
+  <li><a href="#sec7">7. §1.4 次元の呪い</a></li>
+  <li><a href="#sec8">8. §1.5 決定理論</a></li>
+  <li><a href="#sec9">9. §1.6 情報理論</a></li>
+  <li><a href="#sec11">10. 参考リンク集</a></li>
+</ul>
+</nav>
+
+<h2 id="prep">事前準備 — 数学の小辞典</h2>
+
+<p>第1章の議論を読むときに「ここの記号は何だっけ」「この変形のルールはなんだっけ」で詰まらないよう、本まとめで使う記法と技法を一望できる小辞典です。詰まったら戻ってきてください。</p>
+
+<h3>記号一覧</h3>
+
+<table>
+<thead><tr><th>記号</th><th>意味</th><th>例 / 注意</th></tr></thead>
+<tbody>
+<tr><td>$\sum_{n=1}^{N} a_n$</td><td>$a_1 + a_2 + \cdots + a_N$ の総和</td><td>「離散版の積分」</td></tr>
+<tr><td>$\int f(x)\, dx$</td><td>$f(x)$ を $x$ について積分（連続版の和）</td><td>本書では基本的に $-\infty$ から $\infty$</td></tr>
+<tr><td>$\prod_{n=1}^{N} a_n$</td><td>$a_1 a_2 \cdots a_N$ の総積</td><td>i.i.d. 尤度で必ず登場</td></tr>
+<tr><td>$f(x) \propto g(x)$</td><td>$f(x) = c \cdot g(x)$（$c$ は $x$ に依らない定数）</td><td>「比例」。$c$ は正規化で後で決まる</td></tr>
+<tr><td>$X \sim p$</td><td>確率変数 $X$ は分布 $p$ に従う</td><td>例: $\varepsilon \sim \mathcal{N}(0, 1)$</td></tr>
+<tr><td>$E[X], \mathbb{E}[X]$</td><td>期待値 = 「平均」<br>離散: $\sum_x x\,p(x)$、連続: $\int x\,p(x)\,dx$</td><td>$E[aX+b] = aE[X]+b$、線形</td></tr>
+<tr><td>$\mathrm{var}[X]$</td><td>分散 = $E[(X-E[X])^2] = E[X^2] - (E[X])^2$</td><td>$\sigma^2$ と書くことも</td></tr>
+<tr><td>$\mathrm{cov}[X,Y]$</td><td>共分散 = $E[XY] - E[X]E[Y]$</td><td>独立なら 0</td></tr>
+<tr><td>$\dfrac{\partial f}{\partial x_i}$</td><td>偏微分（他の変数を定数とみなして $x_i$ で微分）</td><td>$f = x^2 + xy$ なら $\partial f/\partial x = 2x + y$</td></tr>
+<tr><td>$\nabla f$</td><td>勾配 = $(\partial f/\partial x_1, \ldots, \partial f/\partial x_D)^\top$</td><td>「全方向の偏微分を縦に並べたベクトル」</td></tr>
+<tr><td>$\arg\min_x f(x)$<br>$\arg\max_x f(x)$</td><td>$f(x)$ を最小／最大にする $x$ の値</td><td>$\min f$ は最小値そのもの、 $\arg\min$ は最小値を達成する場所</td></tr>
+<tr><td>$|x|$</td><td>絶対値（スカラー）</td><td>$|-3| = 3$</td></tr>
+<tr><td>$\|\mathbf{x}\|$</td><td>ノルム（ベクトルの長さ） = $\sqrt{x_1^2 + \cdots + x_D^2}$</td><td>$\|\mathbf{x}\|^2 = \mathbf{x}^\top \mathbf{x}$</td></tr>
+<tr><td>$\mathbf{x}^\top$ または $\mathbf{x}^T$</td><td>転置 (行と列を入れ替え)</td><td>列ベクトル $\mathbf{x}$ の転置は行ベクトル</td></tr>
+<tr><td>$\mathbf{x}^\top \mathbf{y}$</td><td>内積 = $\sum_i x_i y_i$</td><td>スカラーになる</td></tr>
+<tr><td>$|A|$, $\det A$</td><td>行列の行列式</td><td>2×2 なら $|A| = a_{11}a_{22} - a_{12}a_{21}$</td></tr>
+<tr><td>$A^{-1}$</td><td>逆行列 ($A A^{-1} = I$)</td><td>$I$ は単位行列</td></tr>
+<tr><td>$\mathbf{w}$, $\boldsymbol\mu$, $\boldsymbol\Sigma$</td><td>太字 = ベクトル または 行列</td><td>細字 $w_i$ は成分</td></tr>
+<tr><td>$p(x)$, $p(x|y)$</td><td>確率密度 (連続) / 条件付き密度<br>PRMLは離散も同じ $p$ で書く</td><td>$p(x|y)$ は「$y$ が与えられた下での $x$ の分布」</td></tr>
+<tr><td>$\mathcal{N}(x \mid \mu, \sigma^2)$</td><td>平均 $\mu$ ・分散 $\sigma^2$ のガウス分布の密度</td><td>$x$ は確率変数、 $|$ の右は分布のパラメータ</td></tr>
+<tr><td>$\delta_{nm}$</td><td>クロネッカーのデルタ ($n=m$ で 1、それ以外 0)</td><td>PRMLでは $I_{nm}$ とも書くが、単位行列 $\mathbf{I}$ と区別しよう</td></tr>
+<tr><td>$\Gamma(z)$</td><td>ガンマ関数 = $\int_0^\infty t^{z-1} e^{-t}\, dt$</td><td>$\Gamma(n) = (n-1)!$ の連続拡張</td></tr>
+</tbody>
+</table>
+
+<h3>使う数学テクニック (本書の各節で頻出)</h3>
+
+<div class="callout key">
+<span class="label">テクニック1: 対数を取って積を和にする</span>
+<p>$N$ 個の項の積 $\prod_n a_n$ は扱いにくいが、対数を取ると</p>
+<p>$$\ln \prod_{n=1}^{N} a_n = \sum_{n=1}^{N} \ln a_n$$</p>
+<p>になり、微分や解析が一気に楽になります。i.i.d. の尤度関数 $p(\mathcal{D}\mid \mathbf{w}) = \prod_n p(x_n|\mathbf{w})$ に必ず適用します。対数は単調増加なので、 $\arg\max$ の位置は不変です。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック2: 連鎖律 (合成関数の微分)</span>
+<p>$y = f(g(x))$ なら $\dfrac{dy}{dx} = f'(g(x)) \cdot g'(x)$。</p>
+<p>例: $E(\mathbf{w}) = \tfrac{1}{2} \sum_n (y_n(\mathbf{w}) - t_n)^2$ を $w_i$ で偏微分すると</p>
+<p>$$\frac{\partial E}{\partial w_i} = \sum_n \underbrace{(y_n(\mathbf{w}) - t_n)}_{\text{外側の微分}} \cdot \underbrace{\frac{\partial y_n}{\partial w_i}}_{\text{内側の微分}}$$</p>
+<p>2乗を外す時の「2」と $\tfrac{1}{2}$ が打ち消し合います。これが PRML §1.1 で $\tfrac{1}{2}$ を付けておく実用上の理由。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック3: 平方完成</span>
+<p>2次式は次のように一意に書き換えられます:</p>
+<p>$$a x^2 + b x + c = a\left(x + \frac{b}{2a}\right)^2 + c - \frac{b^2}{4a}$$</p>
+<p>PRMLでは指数の肩がよく2次形式 $-\tfrac{1}{2\sigma^2}(x - \mu)^2$ になっています。複数のガウスの積を取ると指数の肩は2次式の和 = 2次式、平方完成して再びガウスの形に戻ります。これが「ガウス×ガウス = ガウス」の正体（<a href="#sec5">§5</a> で使用）。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック4: 微分してゼロ (最適化の基本)</span>
+<p>滑らかな関数 $f$ が点 $x^*$ で最小・最大なら、勾配がゼロ:</p>
+<p>$$\left.\frac{\partial f}{\partial x_i}\right|_{x=x^*} = 0, \quad \forall i$$</p>
+<p>MLE、MAP、最小二乗、これら全てがこのレシピで解かれます。「微分してゼロ → その方程式を解く」が基本動作。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック5: ガウス積分</span>
+<p>$$\int_{-\infty}^{\infty} e^{-a x^2}\, dx = \sqrt{\frac{\pi}{a}}$$</p>
+<p>確率密度の正規化定数を求めるとき必ず登場（<a href="#ss-4-1">§4.1</a> で証明）。 $a = 1/2$ なら $\sqrt{2\pi}$、 $a = 1/(2\sigma^2)$ なら $\sqrt{2\pi\sigma^2}$。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック6: 変数変換 (置換積分)</span>
+<p>$\int f(x)\, dx$ で $x = g(u)$ と置換すると $dx = g'(u)\, du$:</p>
+<p>$$\int f(x)\, dx = \int f(g(u))\, g'(u)\, du$$</p>
+<p>多次元の場合は $g'(u)$ が<strong>ヤコビ行列式</strong> $|\partial \mathbf{x}/\partial \mathbf{u}|$ に。極座標 $(x,y) \to (r, \theta)$ では $|\partial(x,y)/\partial(r,\theta)| = r$。 これがガウス積分の証明で「$r$ が出てくる」根拠。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック7: Jensen の不等式</span>
+<p>$f$ が<strong>凸関数</strong>（弦が関数より上にある形、例: $x^2$、$-\ln x$）なら</p>
+<p>$$E[f(X)] \ge f(E[X])$$</p>
+<p>幾何的には「ランダムに点を取って関数値の平均を計算する方が、先に点の平均を取って関数に入れるより大きい (または同じ)」。 KL の非負性、変分推論の ELBO、すべてこの一行から導かれます (<a href="#sec9">§9</a> で使用)。</p>
+</div>
+
+<div class="callout key">
+<span class="label">テクニック8: 汎関数微分</span>
+<p>普通の微分は「変数 $w$」に対して。 <strong>汎関数微分</strong>は「関数 $y(\cdot)$ そのもの」に対して微分する操作。 直感的には「$y$ を $y(x_0)$ の点だけ少し動かしたときの汎関数 $E[y]$ の変化率」。</p>
+<p>$E[y] = \int F(y(x), x)\, dx$ の形（$y$ の微分や積分を含まない簡単な形）なら、 答えは<strong>各点で普通の偏微分</strong>を取るだけ:</p>
+<p>$$\frac{\delta E[y]}{\delta y(x_0)} = \left.\frac{\partial F}{\partial y}\right|_{x = x_0}$$</p>
+<p>これがゼロになる条件「全ての $x_0$ で $\partial F/\partial y = 0$」が、 汎関数を最小化する $y$ の必要条件 (Euler-Lagrange 方程式の最も簡単な形)。 §1.5.5 の $L_q$ 損失最小化と演習 1.27 で使用 (詳細は付録 D)。</p>
+</div>
+
+<h2 id="sec0">0. 第1章は何の章か</h2>
+
+<p>第1章は ML本体に入る前の<strong>3つの言語</strong>を導入する章です。</p>
+
+<pre>┌──────────────────────────────────────────────────────┐
+│  言語1: 確率論     (§1.2)  ─ すべての推論の文法      │ → 演習 1.12
+│  言語2: 決定理論   (§1.5)  ─ 推論を行動に変換する     │ → 演習 1.27
+│  言語3: 情報理論   (§1.6)  ─ 分布の比較・圧縮の尺度   │ → 演習 1.31, 1.35
+└──────────────────────────────────────────────────────┘
+                    ↓ 統一例として
+              [§1.1 多項式曲線フィッティング]              → 演習 1.1
+                    ↓ 派生
+   §1.3 モデル選択 │ §1.4 次元の呪い                    → 演習 1.20</pre>
+
+<p>章末演習はこの3言語＋多項式回帰＋高次元の幾何を<strong>横断的に</strong>問います。 <strong>各演習は、 下の表の「関連節」の終わりに そのまま置いてあります</strong>（問題文＋完全解答つき）。 この表は「どの演習が どこにあるか」の索引としても使ってください:</p>
+
+<table>
+<thead><tr><th>演習</th><th>難度</th><th>関連節</th><th>確かめる内容</th></tr></thead>
+<tbody>
+<tr><td><strong>1.1</strong></td><td>∗</td><td>§1.1</td><td>多項式回帰の正規方程式</td></tr>
+<tr><td><strong>1.12</strong></td><td>∗∗</td><td>§1.2.4</td><td>ガウス i.i.d. のモーメント → MLE分散のバイアス</td></tr>
+<tr><td><strong>1.20</strong></td><td>∗∗</td><td>§1.4</td><td>高次元ガウスの半径方向密度</td></tr>
+<tr><td><strong>1.27</strong></td><td>∗∗</td><td>§1.5.5</td><td>$L_q$ 損失と最適な $y(x)$</td></tr>
+<tr><td><strong>1.31</strong></td><td>∗∗</td><td>§1.6</td><td>同時エントロピー不等式 $H[x,y] \le H[x]+H[y]$</td></tr>
+<tr><td><strong>1.35</strong></td><td>∗</td><td>§1.6</td><td>1次元ガウスのエントロピー</td></tr>
+</tbody>
+</table>
+
+<h2 id="sec1">1. §1.1 多項式曲線フィッティング</h2>
+
+<h3 id="ss-1-1">1.1 直感</h3>
+<p>「N点のデータに M次多項式を当てる」だけの話。だが3つの問いが第1章を貫きます:</p>
+<ul>
+  <li><strong>M をどう選ぶ？</strong> 大→過学習、小→当たらない（§1.3 モデル選択へ）</li>
+  <li><strong>誤差を二乗和で測る根拠は？</strong> →§1.2.5 で「ガウス雑音下の最尤推定と等価」と判明</li>
+  <li><strong>「最適」とは？</strong> 訓練誤差最小？汎化誤差最小？（§1.5 決定理論へ）</li>
+</ul>
+
+<div class="callout gap">
+<span class="label">たとえ: 過学習は「丸暗記」、ちょうどよい当てはめは「理解」</span>
+<p>テスト勉強でたとえると しっくりきます。 <strong>M=9（高次の多項式）は、 過去問の答えを丸暗記した学生</strong>。 手元の10問（訓練データ）には完璧に答えられる（曲線が全点を通る）。 でも 少しひねった新問（テストデータ）が来ると、 グニャグニャの曲線が 見当違いの値を返して 大外しします。</p>
+<p>いっぽう <strong>M=3 くらいは「出題のパターンを理解した学生」</strong>。 手元の問題で 多少とりこぼしても、 新しい問題にも そこそこ答えられる。 機械学習で本当に欲しいのは こちら、 つまり<strong>まだ見ぬデータへの当てはまり（これを「汎化」と呼びます）</strong>です。 「訓練データに合うこと」と「汎化すること」は 別物、 という感覚が この章のすべての出発点になります。</p>
+</div>
+
+<h3 id="ss-1-2">1.2 定式化（式 1.1, 1.2）</h3>
+<p>多項式モデルと二乗和誤差:</p>
+<p>
+$$y(x, \mathbf{w}) = w_0 + w_1 x + w_2 x^2 + \cdots + w_M x^M = \sum_{j=0}^{M} w_j x^j$$
+$$E(\mathbf{w}) = \tfrac{1}{2} \sum_{n=1}^{N} \{ y(x_n, \mathbf{w}) - t_n \}^2$$
+</p>
+<p class="muted">「なぜ $\tfrac{1}{2}$ が付くか?」 → 微分時に 2 が消えて式が綺麗になる<strong>だけ</strong>です。深い意味はありません。</p>
+
+<figure class="figure" id="fig1">
+<img src="figs/fig1_overfitting.svg" alt="M=0,1,3,9 で sin(2πx) に多項式当てはめした結果">
+<figcaption><strong>図1.</strong> $\sin(2\pi x) + \text{noise}$ から N=10 点を取り、 M={0,1,3,9} 次多項式で当てはめ。 M=0 は定数しか出せず、M=1 は直線、M=3 で良い、M=9 は<strong>全点を通るが激しくうねる</strong>＝過学習。</figcaption>
+</figure>
+
+<h3 id="ss-1-3">1.3 RMS 誤差で M とデータ数を公平に比較する（<a href="#eq-1-3">式 1.3</a>）</h3>
+<p>異なる N の比較や訓練 vs テストの比較には<strong>根平均二乗誤差 (RMS error)</strong> を使います:</p>
+<p id="eq-1-3">$$E_{\mathrm{RMS}} = \sqrt{2 E(\mathbf{w}^*) / N} \qquad \text{(式 1.3)}$$</p>
+<p>2 倍は (1.2) の $\tfrac{1}{2}$ を打ち消す、$N$ で割って単位を揃える、平方根で「$t$ と同じ単位」に。</p>
+<p>（本がなくても分かるように 言葉で説明すると）PRML の図1.5 は、 横軸に多項式の次数 $M$、 縦軸に $E_{\mathrm{RMS}}$ を取り、 <strong>訓練誤差とテスト誤差の2本の曲線</strong>を並べたグラフです。 訓練誤差は $M$ を上げるほど 単調に下がっていく（手元のデータには どんどん よく当たる）のに、 <strong>テスト誤差は ある $M$ で底を打ち、 その先では逆に跳ね上がる</strong>。 この「U字型」の底が ちょうどよい $M$。 右肩上がりの部分が過学習です。</p>
+
+<h3 id="ss-1-4">1.4 過学習と正則化（<a href="#eq-1-4">式 1.4</a>）</h3>
+<p>M=9, N=10 で完全フィットになる代わりに $w_i$ が暴走します。 PRML 表 1.1 によれば:</p>
+<table>
+<thead><tr><th>$M$</th><th>0</th><th>1</th><th>6</th><th>9</th></tr></thead>
+<tbody>
+<tr><th scope="row">$w_9^*$ の大きさ</th><td>—</td><td>—</td><td>—</td><td><strong>$\approx 125{,}201$</strong></td></tr>
+</tbody>
+</table>
+<p>これを抑えるのが正則化:</p>
+<p id="eq-1-4">$$\widetilde{E}(\mathbf{w}) = E(\mathbf{w}) + \tfrac{\lambda}{2} \|\mathbf{w}\|^2 \qquad \text{(式 1.4)}$$</p>
+<p>$\lambda$ を大きくすると「 $\mathbf{w}$ を 0 に近づける罰金」が強まる。表 1.2 によると $M=9$ で $\ln\lambda = -18$ にすると $w_9^*$ は $72.68$ まで縮む（約1700倍の差！）。後の §1.2.5 で <strong>$\lambda$ は事前分布と雑音の精度の比 $\alpha/\beta$</strong> と解釈されます（MAP推定、 <a href="#ss-5-2">§5.2</a> 参照）。</p>
+<p class="muted">経験則: 「データ点数 $\geq$ パラメータ数の 5〜10 倍」（PRML p.9）。 ただし §3 では正則化により「実効パラメータ数」が下がるので、この経験則は緩みます。 また実用では切片 $w_0$ を正則化項から除く流派が多い（$t$ の原点シフトに対する不変性を保つため; PRML p.10 脚注）。</p>
+
+<figure class="figure" id="fig2">
+<img src="figs/fig10_regularization.svg" alt="M=9多項式: 正則化なしは激しく振動、正則化ありはなめらか">
+<figcaption><strong>図2.</strong> 正則化の効果。 同じ M=9 の多項式でも、 罰金（正則化）が無いと データに過剰反応して激しく振動するが（赤）、 罰金を入れると 係数の暴走が抑えられ なめらかな曲線になる（青）。 §1.4 の表で見た「$w_9$ が12万→72.68」が、 まさにこの 赤→青 の違いです。</figcaption>
+</figure>
+
+<div class="callout exercise">
+<span class="label">演習 1.1 への接続</span>
+<p>$\partial E / \partial w_i = 0$ を解く問題。 方針は連鎖律 ([テクニック2]) で外側の2乗を外し、 $\partial y/\partial w_i = x_n^i$ を代入、 $w_j$ について整理すると<strong>正規方程式</strong>に到達します:</p>
+<p id="eq-1-122">$$\sum_{j=0}^{M} A_{ij}\, w_j = T_i \qquad A_{ij} = \sum_n x_n^{i+j},\; T_i = \sum_n t_n x_n^i \qquad \text{(式 1.122)}$$</p>
+<p>行列形式 $\mathbf{w} = (\Phi^\top \Phi)^{-1} \Phi^\top \mathbf{t}$ ($\Phi$ は<strong>計画行列 (design matrix)</strong>, $\Phi_{nj} = x_n^j$, $N \times (M{+}1)$)。 後の式 (3.15) と同型 (§3 では基底 $\phi_j(x)$ を一般化、 本節は $\phi_j(x) = x^j$ の特化版)。</p>
+<p class="muted">中間ステップを省かない完全な3段階導出は、 <strong>このすぐ下の「演習 1.1」カード</strong>にあります。</p>
+</div>
+
+<p class="muted">▼ この節の内容を使う章末演習です。 まず自分で手を動かしてから、 解答を開いてください。</p>
+<div class="exercise-card">
+<div class="ex-head">演習 1.1 ∗ — 正規方程式 (§1.1)</div>
+<div class="ex-problem">
+<span class="plabel">問題</span>
+多項式 (1.1) の関数 $y(x, \mathbf{w}) = \sum_{j=0}^M w_j x^j$ を用いた二乗和誤差 (1.2)
+$E(\mathbf{w}) = \tfrac{1}{2}\sum_n \{y(x_n,\mathbf{w}) - t_n\}^2$ を考える。
+この誤差を最小化する係数 $\mathbf{w} = \{w_i\}$ が次の連立一次方程式の解で与えられることを示せ:
+$$\sum_{j=0}^M A_{ij}\, w_j = T_i \quad (1.122)$$
+ただし $A_{ij} = \sum_n (x_n)^{i+j}, \quad T_i = \sum_n (x_n)^i\, t_n$。
+<span class="muted">（添字 $i,j$ は係数番号、$(x_n)^i$ は $x_n$ の $i$ 乗を表す）</span>
+</div>
+<div class="ex-solution">
+<span class="slabel">完全解答</span>
+<p><strong>方針</strong>: 二乗和誤差 $E(\mathbf{w})$ を $w_i$ で偏微分してゼロと置き、 各 $w_j$ について線形な連立方程式に整理する。</p>
+
+<p><span class="step">Step 1.</span> 連鎖律で外側の2乗を外す。</p>
+<p>$E(\mathbf{w}) = \tfrac{1}{2}\sum_n \{y(x_n,\mathbf{w}) - t_n\}^2$ で、$u_n := y(x_n,\mathbf{w}) - t_n$ とおくと外側微分は $2u_n$:</p>
+<p>$$\frac{\partial E}{\partial w_i} = \tfrac{1}{2} \sum_n 2 (y(x_n,\mathbf{w}) - t_n) \cdot \frac{\partial y(x_n,\mathbf{w})}{\partial w_i} = \sum_n (y(x_n,\mathbf{w}) - t_n)\cdot\frac{\partial y}{\partial w_i}$$</p>
+<p>$\tfrac{1}{2}$ と $2$ が打ち消す（これが §1.1 の式 (1.2) で $\tfrac{1}{2}$ を付けた実用的理由）。</p>
+
+<p><span class="step">Step 2.</span> $\partial y / \partial w_i$ を計算。</p>
+<p>$y(x_n, \mathbf{w}) = \sum_j w_j x_n^j$ を $w_i$ で偏微分すると、 $j = i$ の項だけ残り係数は $x_n^i$:</p>
+<p>$$\frac{\partial y(x_n,\mathbf{w})}{\partial w_i} = x_n^i$$</p>
+
+<p><span class="step">Step 3.</span> ゼロと置き $w_j$ について整理。</p>
+<p>$$\sum_n \left( \sum_j w_j x_n^j - t_n \right) x_n^i = 0$$</p>
+<p>和の順序を入れ替えて:</p>
+<p>$$\sum_j \underbrace{\left(\sum_n x_n^{i+j}\right)}_{A_{ij}} w_j = \underbrace{\sum_n t_n x_n^i}_{T_i}$$</p>
+
+<p><span class="step">結論.</span></p>
+<p>$$\boxed{\sum_{j=0}^{M} A_{ij}\, w_j = T_i \qquad (1.122)}$$</p>
+<p>これは $\mathbf{w}$ について $M+1$ 個の線形方程式で、行列形式では $\mathbf{w} = (\Phi^\top \Phi)^{-1} \Phi^\top \mathbf{t}$。 計画行列 $\Phi$ ($\Phi_{nj} = x_n^j$) を用いた擬逆行列の形で、後の式 (3.15) と同型 (§3 では基底 $\phi_j(x)$ を一般化)。</p>
+</div>
+</div>
+
+<h2 id="sec2">2. §1.2.1〜2 確率論の言語</h2>
+
+<h3 id="ss-2-1">2.1 すべては 2 公式から（式 1.10, 1.11, 1.12）</h3>
+<p>sum rule と product rule:</p>
+<p>
+$$\boxed{\,p(X) = \sum_Y p(X, Y) \,}\quad \text{(周辺化)} \qquad \boxed{\,p(X,Y) = p(Y|X)\,p(X)\,}\quad \text{(連鎖律)}$$
+</p>
+<p>この2式から Bayes 則 (1.12) が出ます。 途中を飛ばさず:</p>
+<p><strong>カギは「連鎖律は左右どちらにも分解できる」こと</strong>（$p(X,Y) = p(Y,X)$、 同時確率は順番によらないから）:</p>
+<p>$$p(X, Y) = p(Y|X)\,p(X) = p(X|Y)\,p(Y)$$</p>
+<p>後ろの2つを等号で結び、 両辺を $p(X)$ で割るだけ:</p>
+<p>$$p(Y|X)\,p(X) = p(X|Y)\,p(Y) \;\;\Longrightarrow\;\; p(Y|X) = \frac{p(X|Y)\,p(Y)}{p(X)} = \frac{p(X|Y)\,p(Y)}{\sum_Y p(X|Y)\,p(Y)}$$</p>
+<p class="muted">最後の分母は、 $p(X)$ を sum rule $p(X) = \sum_Y p(X,Y) = \sum_Y p(X|Y)p(Y)$ で書き直しただけ（式 1.13）。 これで「事後 $p(Y|X)$ = 尤度 $p(X|Y)$ × 事前 $p(Y)$ ÷ 規格化」が完成。 PRML も (1.12) で<strong>この対称性 $p(X,Y)=p(Y,X)$ を明示</strong>して導いています。</p>
+
+<div class="callout key">
+<span class="label">条件付き確率 p(A|B) の読み方 — ここが全ての土台</span>
+<p>縦棒「|」は<strong>「〜のもとで」「〜が分かっているとき」</strong>と読みます。 つまり <strong>$p(A|B)$</strong> は「<strong>B が分かっている</strong>という前提での、 <strong>A の確率</strong>」。 覚えることは2つだけ:</p>
+<ul>
+  <li><strong>棒の右（B）= すでに分かっている・与えられている「条件」</strong></li>
+  <li><strong>棒の左（A）= これから知りたい「結論」</strong></li>
+</ul>
+<p>だから条件付き確率を見たら、 いつも「<strong>何が与えられていて（右）、 何を知りたいのか（左）</strong>」と読み替えてください。 これだけで「なぜこの向きなのか」がほぼ読めます。</p>
+<p><strong>向きが命: $p(A|B)$ と $p(B|A)$ は別物です。</strong> 下の検査の例がまさにそれで、 「病気の人が陽性になる確率」 $p(\text{陽性}|\text{病気}) = 95\%$ と、 「陽性だった人が本当に病気の確率」 $p(\text{病気}|\text{陽性}) \approx 9\%$ は、 まったく違う数。 <strong>知りたい向き（左に来てほしいもの）を先に決め</strong>、 測れるのが逆向きしかないときは <strong>Bayes 則で左右をひっくり返す</strong> — これが確率推論の基本動作です。</p>
+<p class="muted">補足: 「|」には2つの使われ方があります。 ① <strong>観測した値で条件づける</strong>（$p(t|x)$ = 入力 $x$ を見たときの $t$）。 ② <strong>パラメータを指定する</strong>（$\mathcal{N}(x|\mu,\sigma^2)$ や $p(t|x,\mathbf{w})$ の $\mathbf{w}$）。 どちらも「〜を与えたとき」と読めば同じ。 ベイズでは「パラメータも確率変数」と見るので、 ①と②の区別は本質的に消えます。</p>
+</div>
+
+<div class="callout key">
+<span class="label">急所</span>
+<p>確率論の全公式（条件付き・周辺・独立性・連鎖律）はすべて上の2行の組合せ。<strong>丸暗記する公式ではなく sum/product で導く</strong>と思え。これを習慣にすると行間が消えます。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">具体例: 病気の検査で Bayes 則を肌感覚に</span>
+<p>「Bayes則 = 事後 ∝ 尤度 × 事前」を数字で確かめます。</p>
+<ul>
+  <li>病気を持つ人の事前確率: $p(D{=}1) = 0.01$（100人に1人）</li>
+  <li>検査の感度: $p(T{=}1 \mid D{=}1) = 0.95$（病気の人を95%陽性に）</li>
+  <li>偽陽性率: $p(T{=}1 \mid D{=}0) = 0.10$（健康な人の10%が陽性に）</li>
+</ul>
+<p>陽性だった人が本当に病気である確率 $p(D{=}1 \mid T{=}1)$ は?</p>
+<p>まず分母（周辺尤度）を sum rule で計算:</p>
+<p>$$p(T{=}1) = p(T{=}1 \mid D{=}1)\,p(D{=}1) + p(T{=}1 \mid D{=}0)\,p(D{=}0) = 0.95 \cdot 0.01 + 0.10 \cdot 0.99 = 0.1085$$</p>
+<p>Bayes 則で事後:</p>
+<p>$$p(D{=}1 \mid T{=}1) = \frac{0.95 \cdot 0.01}{0.1085} \approx 0.087$$</p>
+<p><strong>驚き</strong>: 感度95%の検査で陽性でも、病気そのものが珍しい (事前1%) ので、実際に病気である確率はおよそ <strong>9%</strong>。事前確率を無視して「陽性 ≒ 病気」と早合点する罠 (base rate fallacy) はここから出ます。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">早見表: この本に出てくる条件付き確率「何を意味し、なぜこの向きか」</span>
+<p>第1章で繰り返し出る条件付き確率を、 「意味（右が条件・左が知りたいこと）」と「なぜこの向きか」で並べます。 読んでいて「これ何だっけ」となったら ここに戻ってください。</p>
+<table>
+<thead><tr><th>記法</th><th>意味（「右」を与えたときの「左」）</th><th>なぜこの向きか</th></tr></thead>
+<tbody>
+<tr><td>$p(t \mid x)$</td><td>入力 $x$ を与えたときの、出力 $t$ の分布</td><td>$x$（入力）は手元にあり、$t$（答え）を予測したいから。回帰・分類の主役</td></tr>
+<tr><td>$p(\mathcal{C}_k \mid x)$</td><td>入力 $x$ を見たとき、それがクラス $k$ である確率</td><td>分類で本当に欲しいのは「この $x$ はどのクラス？」。だから左に $\mathcal{C}_k$</td></tr>
+<tr><td>$p(x \mid \mathcal{C}_k)$</td><td>クラス $k$ のデータが、どんな見た目 $x$ をしているか</td><td>「各クラスらしさ」をモデル化する向き（生成モデル <a href="#ss-8-3">§8.3</a>）。Bayes で $p(\mathcal{C}_k|x)$ に反転できる</td></tr>
+<tr><td>$p(\mathcal{D} \mid \mathbf{w})$ <strong>（尤度）</strong></td><td>パラメータ $\mathbf{w}$ を仮置きしたとき、手元のデータ $\mathcal{D}$ が生じる確率</td><td>$\mathbf{w}$ を動かして「データに一番合う $\mathbf{w}$」を探すため。最尤推定はこれを最大化</td></tr>
+<tr><td>$p(\mathbf{w} \mid \mathcal{D})$ <strong>（事後）</strong></td><td>データ $\mathcal{D}$ を見た後の、パラメータ $\mathbf{w}$ についての信念</td><td>本当に知りたいのは「データを踏まえて $\mathbf{w}$ は何か」。Bayes で尤度から反転</td></tr>
+<tr><td>$p(t \mid x, \mathbf{w})$</td><td>入力 $x$ と パラメータ $\mathbf{w}$ を与えたときの $t$ の分布</td><td>モデルの予測そのもの。$\mathbf{w}$ は「指定」、$x$ は「入力」（上の補足②の使い方）</td></tr>
+<tr><td>$p(t \mid x, \mathcal{D})$ <strong>（予測分布）</strong></td><td>新しい $x$ と、訓練データ $\mathcal{D}$ 全体 を踏まえた $t$ の分布</td><td>$\mathbf{w}$ を積分消去し「データ全部から見た予測」にした向き（<a href="#ss-5-3">§5.3</a>）</td></tr>
+<tr><td>$p(\text{陽性} \mid \text{病気})$</td><td>病気の人が陽性になる確率（＝検査の精度）</td><td>検査会社が測れるのは こっち</td></tr>
+<tr><td>$p(\text{病気} \mid \text{陽性})$</td><td>陽性だった人が本当に病気の確率（＝患者が知りたい）</td><td>患者が欲しいのは こっち。Bayes で上から反転（≈9%）</td></tr>
+</tbody>
+</table>
+<p>共通の読み筋: <strong>「測れる・モデル化しやすい向き」と「本当に知りたい向き」がズレているとき、 その橋渡しをするのが Bayes 則</strong>。 尤度↔事後、 $p(x|\mathcal{C}_k)$↔$p(\mathcal{C}_k|x)$、 $p(\text{陽性}|\text{病気})$↔$p(\text{病気}|\text{陽性})$ — どれも この「左右の反転」です。</p>
+</div>
+
+<h3 id="ss-2-2">2.2 確率密度（§1.2.1）</h3>
+<p>連続変数では $p(x)$ は<strong>密度</strong>なので $p(x) > 1$ でも構いません。守るのは:</p>
+<ul>
+  <li>$p(x) \ge 0$</li>
+  <li>$\int p(x)\, dx = 1$</li>
+  <li>区間 $[a, b]$ の確率は $\int_a^b p(x)\, dx$</li>
+</ul>
+<p>変数変換 (式 1.27): $y = g(x)$ のとき $p_y(y) = p_x(x)\,|dx/dy|$。<strong>最頻値は変数変換で不変ではない</strong>（演習1.4 が問う点）。</p>
+
+<div class="callout gap">
+<span class="label">具体例: なぜ密度は 1 を超えてよいのか</span>
+<p>成人男性の身長で考えます。 「ちょうど 170.000…cm」の人の割合は、 厳密には 0（連続値なので、 1点だけの確率はゼロ）。 意味を持つのは「169〜171cm の人が 何割いるか」という<strong>区間の確率＝面積</strong>です。 密度 $p(x)$ は「その面積を作るための<strong>高さ</strong>」にすぎません。 だから、 同じ身長分布を cm でなく m で測ると、 横幅が 100分の1 に潰れる分、 同じ面積を保つために 高さが跳ね上がり、 平気で 1 を超えます。 守るべきは「高さ」ではなく「全部の面積（積分）が 1」であること、 ただそれだけ。</p>
+</div>
+
+<h3 id="ss-2-3">2.3 期待値・分散・共分散（§1.2.2）</h3>
+<p>
+$$E[f] = \int p(x) f(x)\, dx, \qquad \mathrm{var}[f] = E[f^2] - (E[f])^2, \qquad \mathrm{cov}[x,y] = E[xy] - E[x]E[y]$$
+</p>
+<p><strong>条件付き期待値（<a href="#eq-1-37">式 1.37</a>）</strong>: $y$ の値ごとに $x$ の分布で平均を取る:</p>
+<p id="eq-1-37">$$E_x[f \mid y] = \int p(x \mid y)\, f(x)\, dx$$</p>
+<p>これは $y$ の関数で、特に $f(x) = x$ なら $E[x|y]$ は<strong>回帰関数 (regression function)</strong> と呼ばれ、後の §1.5.5 (式 1.89) で「二乗損失最小化の解」として再登場します。</p>
+<p><strong>ベクトル共分散行列（<a href="#eq-1-42">式 1.42</a>）</strong>: 多変量 $\mathbf{x}, \mathbf{y}$ では:</p>
+<p id="eq-1-42">$$\mathrm{cov}[\mathbf{x}, \mathbf{y}] = E[(\mathbf{x} - E[\mathbf{x}])(\mathbf{y} - E[\mathbf{y}])^\top] = E[\mathbf{x}\mathbf{y}^\top] - E[\mathbf{x}]E[\mathbf{y}]^\top$$</p>
+<p>これは<strong>行列</strong>。 多変量ガウス (式 1.52) で出てくる $\boldsymbol\Sigma$ がこれです。</p>
+
+<div class="callout gap">
+<span class="label">具体例: サイコロの期待値・分散と、共分散の「符号」</span>
+<p><strong>期待値と分散（サイコロ）</strong>。 公平なサイコロの出目 1〜6 が等確率なら、 期待値は $E[x] = (1+2+3+4+5+6)/6 = 3.5$。 「3.5 の目」は無いけれど、 何回も振った平均は 3.5 に近づく、 という意味です。 分散は $\mathrm{var}[x] = E[x^2] - (3.5)^2 = \tfrac{91}{6} - 12.25 \approx 2.92$。 これが「出目が 平均 3.5 から どれくらい散らばるか」の目安。</p>
+<p><strong>共分散の符号（身長と体重）</strong>。 $\mathrm{cov}[x,y]$ は「2つが 同じ方向に動くか、 逆に動くか」を表します。 身長 $x$ と体重 $y$ なら、 背が高い人ほど 体重も重い傾向 → $\mathrm{cov} > 0$（正の相関）。 気温と「使い捨てカイロの売上」なら、 暑いほど売れない → $\mathrm{cov} < 0$（負の相関）。 まったく無関係（身長と電話番号の下4桁）なら $\mathrm{cov} \approx 0$。 行列版 $\boldsymbol\Sigma$ は、 これを すべての変数ペアについて並べた表、 と思えば十分です。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">行間: $\mathrm{var}[f] = E[f^2] - (E[f])^2$ の証明</span>
+<p>$(f - E[f])^2$ を展開するだけ:</p>
+<p>$$E[(f - E[f])^2] = E[f^2] - 2\, E[f]\cdot E[f] + (E[f])^2 = E[f^2] - (E[f])^2$$</p>
+<p>これがそのまま<strong>演習 1.5</strong> の内容。</p>
+</div>
+
+<figure class="figure" id="fig3">
+<img src="figs/fig9_covariance.svg" alt="正・ゼロ・負の共分散を散布図で比較">
+<figcaption><strong>図3.</strong> 共分散の符号。 左: 正（一方が大なら他方も大。 例: 身長と体重）。 中: ほぼ0（無関係）。 右: 負（一方が大なら他方は小。 例: 気温とカイロ売上）。 共分散は「2変数が同じ向きに動くか逆か」を表します。</figcaption>
+</figure>
+
+<h2 id="sec3">3. §1.2.3 ベイズ的確率</h2>
+
+<h3 id="ss-3-1">3.1 何が違うのか</h3>
+<table>
+<thead><tr><th>観点</th><th>頻度論</th><th>ベイズ</th></tr></thead>
+<tbody>
+<tr><td>パラメータ $\mathbf{w}$</td><td>固定の真値</td><td>確率分布（信念）</td></tr>
+<tr><td>確率の意味</td><td>長期試行の頻度</td><td>信念の度合い</td></tr>
+<tr><td>典型的推定</td><td>最尤推定 (MLE)</td><td>事後分布 → 点推定 (MAP) または積分</td></tr>
+<tr><td>不確実性の扱い</td><td>標準誤差・信頼区間</td><td>事後分散・予測分布</td></tr>
+</tbody>
+</table>
+<p class="muted"><strong>MAP</strong> (Maximum A Posteriori) = 事後分布 $p(\mathbf{w}\mid \mathcal{D})$ の最頻値を取る点推定。本プリント <a href="#ss-5-2">§5.2</a> で詳述。</p>
+
+<h3 id="ss-3-2">3.2 更新ルール（式 1.43）</h3>
+<p>
+$$\underbrace{p(\mathbf{w}\mid \mathcal{D})}_{\text{事後}} \;=\; \frac{\overbrace{p(\mathcal{D}\mid \mathbf{w})}^{\text{尤度}} \cdot \overbrace{p(\mathbf{w})}^{\text{事前}}}{\underbrace{p(\mathcal{D})}_{\text{周辺尤度}}}, \qquad p(\mathcal{D}) = \int p(\mathcal{D}\mid \mathbf{w})\,p(\mathbf{w})\,d\mathbf{w}$$
+</p>
+<p>「事後 ∝ 尤度 × 事前」の比例式は <strong>$\mathbf{w}$ について</strong>の比例（$\mathcal{D}$ は固定）です。</p>
+
+<h3 id="ss-3-3">3.3 共役事前分布</h3>
+<p>事前と尤度を選ぶと事後も<strong>同じ族</strong>になる場合、その事前を共役事前と呼びます。<strong>計算が閉形式になる</strong>のが唯一最大の御利益。例: ガウス尤度 × ガウス事前 = ガウス事後（§3.3）。</p>
+
+<h3 id="ss-3-4">3.4 ありがちな誤解</h3>
+<p>「事前分布が恣意的だからベイズは主観」は半分しか正しくない。サンプル数が増えれば事後は尤度に支配され、事前の影響は薄れる（漸近的に頻度論と一致）。</p>
+
+<div class="callout gap">
+<span class="label">具体例: コインを3回投げて3回とも表だったら？</span>
+<p>PRML が挙げる有名な例です。 コインを 3回投げて、 たまたま 3回とも表が出たとします。 <strong>最尤推定</strong>は「データに最もよく当てはまる値」を選ぶので、 「表の確率 = 3/3 = 1」、 つまり<strong>「このコインは100%表、 今後 裏は絶対に出ない」</strong>と断言してしまいます。 さすがに行きすぎ。 これも一種の過学習（たった3個のデータへの過剰適合）です。</p>
+<p>いっぽうベイズは「コインなんてだいたい半々だろう」という ゆるい事前を持っておくので、 3回表を見たあとでも<strong>穏当な値</strong>に落ち着きます。 たとえば「最初はどの確率も等しくありえる」という一様な事前を使うと、 計算上 表の確率は $(3+1)/(3+2) = 4/5 = 0.8$（ラプラスの継起則）。 「1」と断言せず「0.8 くらいかな」と踏みとどまる。 これが「少ないデータでは事前が効き、 データが増えると事前は薄れて 最尤推定に近づく」という話の 具体的な姿です。</p>
+</div>
+
+<figure class="figure" id="fig4">
+<img src="figs/fig14_bayes_update.svg" alt="コイン3回表後のベイズ事後分布。最尤はp=1、事後平均は0.8">
+<figcaption><strong>図4.</strong> ベイズ更新。 「表が出る確率 p」について、 観測前は一様（青、 どの値もありうる）。 表3回を見た後の事後（赤）は p=1 寄りに動くが、 最尤のように「p=1」と断言はせず、 平均は 0.8（ラプラスの継起則）に踏みとどまります。</figcaption>
+</figure>
+
+<h3 id="ss-3-5">3.5 Cox の定理 — ベイズが「論理の拡張」である根拠</h3>
+<p>ベイズ確率が単なる「主観の数値化」ではないことを示す結果。 Cox (1946) は信念の度合いを実数で表すときに常識的に満たすべき<strong>3つの公理</strong>を立てました:</p>
+<ol>
+  <li><strong>連続性</strong>: 信念の度合いは実数で連続的に表現できる</li>
+  <li><strong>否定の整合性</strong>: 命題 $\lnot A$ の信念は $A$ の信念だけで決まる (関数 $f$ が存在して信念$(\lnot A) = f($信念$(A))$)</li>
+  <li><strong>連言の整合性</strong>: 命題「$A$ かつ $B$」の信念は「$A$ の信念」と「$A$ を仮定したときの $B$ の信念」だけで決まる</li>
+</ol>
+<p>これらの公理から導かれる演算則は<strong>確率の和則 (sum rule) ・積則 (product rule) と一意に一致</strong>することが証明されました (Cox 1946, Jaynes 2003)。</p>
+<p>つまり<strong>ベイズ確率は古典的論理 (真偽2値) を「真偽の度合い (実数値)」に拡張したもの</strong>であり、 主観の表現ではなく一貫した推論のための数学的構造です。 PRML §1.2.3 末尾でも E. T. Jaynes の議論として触れられています。</p>
+
+<p class="muted">参考: <a href="https://www.nomuyu.com/prml_summary/">nomulog § 頻度主義とベイズ主義の比較</a> / <a href="https://zenn.dev/naoki0103/books/study-record-prml/viewer/chapter1">Zenn 第1章 §1.2.3 節</a></p>
+
+<h2 id="sec4">4. §1.2.4 ガウス分布（最重要）</h2>
+
+<h3 id="ss-4-1">4.1 形（式 1.46, 1.52）</h3>
+<p>
+1D: $\displaystyle \mathcal{N}(x\mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\!\left\{ -\frac{(x-\mu)^2}{2\sigma^2} \right\}$
+</p>
+
+<div class="callout gap">
+<span class="label">具体例: 身長の分布で μ と σ を読む</span>
+<p>1次元ガウスを決めるパラメータは たった2つ。 $\mu$ が「山のてっぺんの位置（平均）」、 $\sigma$ が「山の横幅（ばらつき）」です。 たとえば成人男性の身長なら $\mu \approx 171$cm、 $\sigma \approx 6$cm くらい。 これは「平均 171cm を中心に、 ±6cm（=$\sigma$）の中に およそ 68%、 ±12cm（=$2\sigma$）の中に およそ 95% の人が収まる」という意味です（ガウスの <strong>68・95・99.7 ルール</strong>）。 $\sigma$ が小さいほど 山は細く尖って みんな似た身長、 大きいほど なだらかで バラバラ。 それだけのことです。</p>
+</div>
+<p>
+D次元: $\displaystyle \mathcal{N}(\mathbf{x}\mid \boldsymbol\mu, \boldsymbol\Sigma) = \frac{1}{(2\pi)^{D/2}}\, \frac{1}{|\boldsymbol\Sigma|^{1/2}} \exp\!\left\{ -\tfrac{1}{2}(\mathbf{x}-\boldsymbol\mu)^\top \boldsymbol\Sigma^{-1} (\mathbf{x}-\boldsymbol\mu) \right\}
+$
+</p>
+<div class="callout gap">
+<span class="label">行間: 多変量ガウスの各パーツの意味</span>
+<ul>
+  <li><strong>$\boldsymbol\Sigma$</strong>: $D \times D$ の<strong>共分散行列</strong> ($\Sigma_{ij} = \mathrm{cov}[x_i, x_j]$、 §2.3 で導入)。 対角成分は各変数の分散、 非対角は変数間の共分散。 一般には対称かつ半正定値だが、 ガウス密度が well-defined であるためには<strong>正定値</strong>（固有値がすべて正、 $|\boldsymbol\Sigma| > 0$）が必要 (PRML §2.3、 固有値ゼロの特異な場合は低次元への縮退で §12 で扱う)。</li>
+  <li><strong>$|\boldsymbol\Sigma|^{1/2}$</strong>: 行列式の平方根。 1次元の $\sigma$ に対応する「広がり」の指標。 正規化定数 $1/((2\pi)^{D/2}|\boldsymbol\Sigma|^{1/2})$ で全積分を 1 にする (1次元の $\sqrt{2\pi\sigma^2}$ の多次元版)。</li>
+  <li><strong>$(\mathbf{x}-\boldsymbol\mu)^\top \boldsymbol\Sigma^{-1} (\mathbf{x}-\boldsymbol\mu)$</strong>: <strong>マハラノビス距離</strong>の二乗。 $\mathbf{x}$ が $\boldsymbol\mu$ から「共分散構造で測って」どれだけ離れているか。 1次元の $(x-\mu)^2/\sigma^2$ の多次元版。</li>
+  <li>等密度面 (= 指数の中身が一定の面) はマハラノビス距離が一定 ⇒ <strong>$\boldsymbol\Sigma$ の固有ベクトル方向に伸びた楕円体</strong>。 $\boldsymbol\Sigma = \sigma^2 \mathbf{I}$ なら球。</li>
+</ul>
+<p>§2.3 冒頭 (多変量ガウスの幾何: 楕円体・マハラノビス距離) と §2.3.1 (条件付きガウス) で詳細展開されますが、 第1章では「ガウスは中心と広がり (共分散行列) で完全に決まる、 等密度面は楕円」とだけ押さえれば十分。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">行間: 正規化定数 $1/\sqrt{2\pi\sigma^2}$ はどこから来るか</span>
+<p>教科書はサラッと書きますが、これは<strong>ガウス積分</strong>から来ます:</p>
+<p>$$I = \int_{-\infty}^{\infty} e^{-x^2/2}\, dx = \sqrt{2\pi}$$</p>
+<p>2乗→極座標で証明（演習 1.7 と同じ手筋）。 ひと飛ばしせずに4ステップで:</p>
+<p><strong>ステップ1: $I^2$ を二重積分にして指数の中身を $x^2 + y^2$ に</strong></p>
+<p>$$I^2 = \left(\int e^{-x^2/2}\,dx\right) \left(\int e^{-y^2/2}\,dy\right) = \int\!\!\int e^{-(x^2+y^2)/2}\, dx\, dy$$</p>
+<p><strong>ステップ2: 極座標 $(x,y) = (r\cos\theta, r\sin\theta)$ に変換</strong> ([テクニック6] 参照)</p>
+<p>ヤコビ行列式 $|\partial(x,y)/\partial(r,\theta)| = r$ なので $dx\,dy = r\,dr\,d\theta$、 $x^2 + y^2 = r^2$:</p>
+<p>$$I^2 = \int_0^{2\pi}\!\int_0^{\infty} e^{-r^2/2}\, r\, dr\, d\theta = \int_0^{2\pi}\! d\theta \cdot \int_0^{\infty} e^{-r^2/2}\, r\, dr$$</p>
+<p><strong>ステップ3: 内側の $r$ 積分を $u = r^2/2$ で置換</strong></p>
+<p>$u = r^2/2 \Rightarrow du = r\, dr$、 範囲は $r: 0 \to \infty$ が $u: 0 \to \infty$:</p>
+<p>$$\int_0^{\infty} e^{-r^2/2}\, r\, dr = \int_0^{\infty} e^{-u}\, du = \left[-e^{-u}\right]_0^{\infty} = -0 - (-1) = 1$$</p>
+<p><strong>ステップ4: 全部かける</strong></p>
+<p>$$I^2 = \underbrace{\int_0^{2\pi} d\theta}_{=2\pi} \cdot \underbrace{\int_0^{\infty} e^{-r^2/2}\, r\, dr}_{=1} = 2\pi \quad \therefore\ I = \sqrt{2\pi}$$</p>
+<p>これを $(x-\mu)/\sigma$ で置換すれば、平均 $\mu$ ・分散 $\sigma^2$ ガウスの全積分が $\sqrt{2\pi\sigma^2}$ と分かります。</p>
+<p>参考: <a href="https://ja.wikipedia.org/wiki/%E3%82%AC%E3%82%A6%E3%82%B9%E7%A9%8D%E5%88%86">ガウス積分(Wikipedia)</a> / <a href="https://k-san.link/gaussian-integral/">k-san.link</a></p>
+</div>
+
+<figure class="figure" id="fig5">
+<img src="figs/fig8_gaussian_shapes.svg" alt="μを変えると山が動き、σを変えると山の幅が変わる">
+<figcaption><strong>図5.</strong> ガウス分布の2つのつまみ。 左: μ（平均）を変えると 山が左右に動く。 右: σ（標準偏差）を変えると 山の幅が変わる（小さいほど尖り、 大きいほど なだらか）。</figcaption>
+</figure>
+
+<h3 id="ss-4-2">4.2 平均・分散（式 1.49, 1.50）</h3>
+<p>
+$$E[x] = \int x\,\mathcal{N}(x\mid \mu, \sigma^2)\, dx = \mu, \qquad \mathrm{var}[x] = E[x^2] - \mu^2 = \sigma^2$$
+</p>
+
+<h3 id="ss-4-3">4.3 最尤推定（式 1.55, 1.56）</h3>
+<p>$x_1, \ldots, x_N \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu, \sigma^2)$ の対数尤度:</p>
+<p>$$\ln p(\mathbf{x}\mid \mu, \sigma^2) = -\frac{N}{2}\ln(2\pi\sigma^2) - \frac{1}{2\sigma^2} \sum_{n=1}^{N} (x_n - \mu)^2$$</p>
+<p>$\mu, \sigma^2$ で偏微分してゼロ（$\mu$ の式を先に解いて、その $\mu_{\text{ML}}$ を $\sigma^2$ の式に代入する依存関係に注意）。</p>
+<p><strong>$\mu$ の偏微分</strong>: 連鎖律で $(x_n - \mu)^2 \to 2(x_n - \mu)\cdot(-1)$:</p>
+<p>$$\frac{\partial}{\partial \mu} \ln p = -\frac{1}{2\sigma^2}\sum_n 2(x_n - \mu)(-1) = \frac{1}{\sigma^2}\sum_n (x_n - \mu) = 0$$</p>
+<p>$\sigma^2 > 0$ で割れて $\sum_n (x_n - \mu) = 0 \Rightarrow N\mu = \sum_n x_n$、ゆえに $\mu_{\text{ML}} = \tfrac{1}{N}\sum_n x_n$。</p>
+<p><strong>$\sigma^2$ の偏微分</strong>: $\ln p$ の $\sigma^2$ 依存部分は $-\tfrac{N}{2}\ln \sigma^2 - \tfrac{1}{2\sigma^2}\sum_n (x_n-\mu)^2$。 $\sigma^2$ について微分してゼロ:</p>
+<p>$$-\frac{N}{2\sigma^2} + \frac{1}{2(\sigma^2)^2}\sum_n (x_n-\mu)^2 = 0 \;\Rightarrow\; \sigma^2 = \frac{1}{N}\sum_n (x_n - \mu)^2$$</p>
+<p>$\mu$ を $\mu_{\text{ML}}$ に置き換えて:</p>
+<p>$$\boxed{\mu_{\text{ML}} = \frac{1}{N}\sum_n x_n, \qquad \sigma^2_{\text{ML}} = \frac{1}{N}\sum_n (x_n - \mu_{\text{ML}})^2}$$</p>
+
+<div class="callout gap">
+<span class="label">具体例: 3人の身長から最尤推定してみる</span>
+<p>身長 168, 170, 175 cm の3人を観測したとします（N=3）。 上の箱の式に 当てはめるだけです:</p>
+<ul>
+  <li><strong>平均</strong>: $\mu_{\text{ML}} = (168+170+175)/3 = 171$ cm。 ただの平均値。</li>
+  <li><strong>分散</strong>: 各人の「平均からのズレ」は $-3,\ -1,\ +4$。 2乗して足すと $9+1+16 = 26$。 これを $N=3$ で割って $\sigma^2_{\text{ML}} = 26/3 \approx 8.7$（標準偏差 $\sigma_{\text{ML}} \approx 2.9$ cm）。</li>
+</ul>
+<p>最尤推定は「平均は ただの平均、 分散は ズレの2乗の平均」という、 拍子抜けするほど素直な式になります。 ただし この分散は ほんの少し小さめに出ます（次の囲み）。 不偏にするには $N$ でなく $N-1 = 2$ で割って $26/2 = 13$ とします。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">行間: なぜ $\sigma^2_{\text{ML}}$ はバイアスを持つか</span>
+<p>真の平均 $\mu$ ではなく推定値 $\mu_{\text{ML}}$ を使うと、$(x_n - \mu_{\text{ML}})^2$ は $(x_n - \mu)^2$ より<strong>体系的に小さく</strong>なります。直感: $\mu_{\text{ML}}$ はサンプル自身から作るので、サンプル達に寄り添う方向に最適化された平均だから。</p>
+<p>形式的には演習 1.12 で見るとおり:</p>
+<p>$$E[\sigma^2_{\text{ML}}] = \frac{N-1}{N}\, \sigma^2 \quad \text{(過小評価)}$$</p>
+<p>不偏推定量にするには $\dfrac{N}{N-1}$ 倍すればよい（これが標本分散で $N-1$ で割る理由）。 明示的には:</p>
+<p>$$\widetilde{\sigma}^2 = \frac{N}{N-1}\, \sigma^2_{\text{ML}} = \frac{1}{N-1}\sum_n (x_n - \mu_{\text{ML}})^2 \qquad \text{(式 1.59、 不偏分散)}$$</p>
+<p>PRML はここで 10.1.3 への伏線として「ベイズ的に扱えば自動的にこの $N-1$ で割る形が出てくる」と予告しています。</p>
+<p class="muted">極端例: $N=1$ なら $\mu_{\text{ML}}=x_1$, $\sigma^2_{\text{ML}}=0$ になります。1点では散らばりが定義不能で「ゼロ分散」になる、と思えばバイアスの方向が直感的。</p>
+</div>
+
+<figure class="figure" id="fig6">
+<img src="figs/fig6_mle_bias.svg" alt="MLE μ は不偏、σ² はバイアスを持つことを N=2 でのシミュレーションで示す">
+<figcaption><strong>図6.</strong> $\mu = 0,\ \sigma^2 = 1,\ N = 2$ で 30000 回シミュレーション。 $\mu_{\text{ML}}$ は不偏 (左、真値 0 に中央が一致)、一方 $\sigma^2_{\text{ML}}$ は<strong>過小評価</strong> (右、 N=2 の理論値 $(N-1)/N \cdot \sigma^2 = 0.5$ に一致)。 $N$ が小さいほどバイアスが目立つ。</figcaption>
+</figure>
+
+<p class="muted">参考: <a href="https://qiita.com/Alreschas/items/b1dd6f65a2c2bcec8d26">Qiita PRML図1.15 ガウス最尤バイアス</a> / <a href="https://pystyle.info/statistics-mle-and-bias-of-normal-distribution/">pystyle 正規分布MLEとバイアス</a></p>
+
+<p class="muted">▼ この節の内容を使う章末演習です。 まず自分で手を動かしてから、 解答を開いてください。</p>
+<div class="exercise-card">
+<div class="ex-head">演習 1.12 ∗∗ — ガウス独立サンプルの2次モーメント (§1.2.4)</div>
+<div class="ex-problem">
+<span class="plabel">問題</span>
+結果 (1.49) $E[x] = \mu$ と (1.50) $\mathrm{var}[x] = \sigma^2$ を用いて、平均 $\mu$ ・分散 $\sigma^2$ のガウス分布から得た独立サンプル $x_n, x_m$ について
+$$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
+を示せ。ここで $I_{nm}$ は $n = m$ で 1、 $n \ne m$ で 0 となる量（クロネッカーのデルタ $\delta_{nm}$）。さらにこの結果を用いて、 (1.57) $E[\mu_{\text{ML}}] = \mu$ および (1.58) $E[\sigma^2_{\text{ML}}] = \frac{N-1}{N}\sigma^2$ を証明せよ。
+</div>
+<div class="ex-solution">
+<span class="slabel">完全解答</span>
+<p><strong>方針</strong>: (a) まず2次モーメント $E[x_n x_m]$ を $n=m$ と $n \ne m$ で場合分け。 (b) その結果を使って $\mu_{\mathrm{ML}}$ と $\sigma^2_{\mathrm{ML}}$ の期待値を計算する。</p>
+
+<p><span class="step">Step 1.</span> $E[x_n x_m]$ の場合分け。</p>
+<ul>
+  <li><strong>$n = m$ の場合</strong>: 分散の定義 $\mathrm{var}[x_n] = E[x_n^2] - (E[x_n])^2$ より $E[x_n^2] = \sigma^2 + \mu^2$。</li>
+  <li><strong>$n \ne m$ の場合</strong>: $x_n$ と $x_m$ は独立なので $E[x_n x_m] = E[x_n] \cdot E[x_m] = \mu \cdot \mu = \mu^2$。</li>
+</ul>
+<p>両者をクロネッカーデルタ $I_{nm}$ ($n=m$ で 1、 それ以外 0) でまとめると:</p>
+<p id="eq-1-130">$$\boxed{E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \qquad (1.130)\ \checkmark}$$</p>
+
+<p><span class="step">Step 2.</span> $E[\mu_{\mathrm{ML}}] = \mu$ の導出 (<a href="#eq-1-57">式 1.57</a>)。</p>
+<p>$\mu_{\mathrm{ML}} = (1/N)\sum_n x_n$ の期待値は、 期待値の線形性から:</p>
+<p id="eq-1-57">$$E[\mu_{\mathrm{ML}}] = \frac{1}{N}\sum_n E[x_n] = \frac{1}{N} \cdot N \mu = \mu \qquad (1.57)\ \checkmark$$</p>
+<p>$\mu_{\mathrm{ML}}$ は<strong>不偏推定量</strong>（バイアスゼロ）。</p>
+
+<p><span class="step">Step 3.</span> $E[\sigma^2_{\mathrm{ML}}]$ を構成要素に分解。</p>
+<p>$\sigma^2_{\mathrm{ML}} = (1/N)\sum_n (x_n - \mu_{\mathrm{ML}})^2$ の中身を展開:</p>
+<p>$$(x_n - \mu_{\mathrm{ML}})^2 = x_n^2 - 2 x_n \mu_{\mathrm{ML}} + \mu_{\mathrm{ML}}^2$$</p>
+<p>期待値を取ると3項に分かれる:</p>
+<p>$$E[(x_n - \mu_{\mathrm{ML}})^2] = E[x_n^2] - 2\, E[x_n \mu_{\mathrm{ML}}] + E[\mu_{\mathrm{ML}}^2]$$</p>
+
+<p><span class="step">Step 4.</span> 3項をそれぞれ計算する (ここで Step 1 の結果を活用)。</p>
+<ul>
+  <li><strong>第1項</strong>: $E[x_n^2] = \sigma^2 + \mu^2$ (Step 1 で済)</li>
+  <li><strong>第2項</strong>: $\mu_{\mathrm{ML}} = (1/N)\sum_m x_m$ を代入し、 和を引きずり出す。
+    $$E[x_n \mu_{\mathrm{ML}}] = \frac{1}{N}\sum_m E[x_n x_m] = \frac{1}{N}\left[(\sigma^2 + \mu^2) + (N-1)\mu^2\right] = \frac{\sigma^2}{N} + \mu^2$$
+    (うち $m=n$ の項は $\sigma^2 + \mu^2$、 残り $N-1$ 項は $\mu^2$。)</li>
+  <li><strong>第3項</strong>: 同様に $E[\mu_{\mathrm{ML}}^2] = E[(1/N)^2 \sum_m \sum_k x_m x_k]$。 二重和 $\sum_m \sum_k$ は $N^2$ 個のペア $(m,k)$ にわたる和で、 そのうち<strong>対角 $m=k$ が $N$ 個</strong>（各 $E[x_m^2] = \sigma^2 + \mu^2$）、 <strong>非対角 $m \ne k$ が $N(N-1)$ 個</strong>（各 $E[x_m x_k] = \mu^2$、Step 1 の結果）。 合計:
+    $$E[\mu_{\mathrm{ML}}^2] = \frac{1}{N^2}\left[N(\sigma^2 + \mu^2) + N(N-1)\mu^2\right] = \frac{\sigma^2}{N} + \mu^2$$</li>
+</ul>
+
+<p><span class="step">Step 5.</span> 3項を代入して $\mu^2$ がきれいに消える。</p>
+<p>$$E[(x_n - \mu_{\mathrm{ML}})^2] = (\sigma^2 + \mu^2) - 2\!\left(\frac{\sigma^2}{N} + \mu^2\right) + \left(\frac{\sigma^2}{N} + \mu^2\right)$$</p>
+<p>$$= \sigma^2 + \mu^2 - \frac{2\sigma^2}{N} - 2\mu^2 + \frac{\sigma^2}{N} + \mu^2 = \sigma^2 - \frac{\sigma^2}{N} = \frac{N-1}{N}\sigma^2$$</p>
+
+<p><span class="step">結論.</span> $n$ について和を取って $1/N$ 倍しても同じ値:</p>
+<p id="eq-1-58">$$\boxed{E[\sigma^2_{\mathrm{ML}}] = \frac{N-1}{N}\sigma^2 \qquad (1.58)\ \checkmark}$$</p>
+<p>つまり $\sigma^2_{\mathrm{ML}}$ は<strong>過小評価</strong>のバイアスを持つ。 これを $N/(N-1)$ 倍したのが不偏分散 $\tilde\sigma^2 = (1/(N-1))\sum (x_n - \mu_{\mathrm{ML}})^2$ (式 1.59)。</p>
+</div>
+</div>
+
+<h2 id="sec5">5. §1.2.5 - §1.2.6 曲線フィッティング 再訪</h2>
+
+<h3 id="ss-5-1">5.1 最小二乗 = ガウス雑音下のMLE</h3>
+<p>モデル: $t = y(x, \mathbf{w}) + \varepsilon, \quad \varepsilon \sim \mathcal{N}(0, \beta^{-1})$。 $\beta$ は<strong>精度パラメータ (precision)</strong> = 分散の逆数。PRMLでは分散 $\sigma^2$ より精度 $\beta = 1/\sigma^2$ を主役にします（ベイズ計算で「精度の和」に分解できるため）。以降の章でも一貫してこの記法。</p>
+<p>すると条件付き分布は:</p>
+<p>$$p(t\mid x, \mathbf{w}, \beta) = \mathcal{N}(t\mid y(x, \mathbf{w}), \beta^{-1})$$</p>
+<p>この式の<strong>意味</strong>を絵にしたのが下の図です。 「各 $x$ で、 出力 $t$ は <strong>曲線 $y(x,\mathbf{w})$ を中心に、 ガウス（正規分布）で散らばる</strong>」。 つまり曲線の上に、 各 $x$ ごとに小さなベル（釣鐘）が乗っていて、 データはそのベルから生まれる、 というモデルです。 $\beta^{-1}$ がベルの幅（ノイズの大きさ）。</p>
+
+<figure class="figure" id="fig7">
+<img src="figs/fig15_noise_model.svg" alt="回帰曲線の上に各xでガウスのベルが乗り、データがそこから散らばる図">
+<figcaption><strong>図7.</strong> ノイズモデル $p(t\mid x,\mathbf{w},\beta) = \mathcal{N}(t\mid y(x,\mathbf{w}),\beta^{-1})$ の意味。 各 $x$ で、 曲線 $y(x,\mathbf{w})$（青）を中心に $t$ がガウス（赤いベル）で散らばり、 観測データはそこから生まれる。 ベルの幅が $\beta^{-1}$（ノイズの大きさ）。 この「曲線＋各点のベル」が、 最初のモデル式の正体です。</figcaption>
+</figure>
+
+<div class="callout key">
+<span class="label"><a href="#ss-5-1">§5.1</a> の流れ（地図）— あなたの疑問への答え</span>
+<p><strong>「モデル式から予測分布の形は もう書けるじゃん、 最大化いらなくない？」</strong> — その感覚は<strong>正しい</strong>です。 ただし大事な区別があります。</p>
+<p>上のモデル式は、 パラメータ $\mathbf{w}, \beta$ が<strong>まだ"空欄"の「ひな形」</strong>です。 $\mathbf{w}, \beta$ に何を入れるかで 無数の違う分布になる。 形は書けても、 <strong>どの値を入れればいいかが決まっていないので、 まだ予測できません</strong>。</p>
+<p>そこで <a href="#ss-5-1">§5.1</a> がやることは、 ひとつだけ: <strong>データを使って空欄を埋める＝いちばんもっともらしい $\mathbf{w}_{\text{ML}}, \beta_{\text{ML}}$ を決める</strong>。 それが対数尤度の最大化です。 整理すると:</p>
+<ul>
+  <li><strong>予測分布の"形"</strong>（テンプレート）＝ モデル式のまま。 <strong>タダで書ける</strong>（あなたの言う通り）。</li>
+  <li><strong>その中に入れる"値" $\mathbf{w}_{\text{ML}}, \beta_{\text{ML}}$</strong> ＝ 最大化して<strong>初めて手に入る</strong>。 これをやらないと空欄が埋まらない。</li>
+</ul>
+<p>そして <a href="#ss-5-1">§5.1</a> の<strong>もう一つの収穫</strong>が、 この最大化が 実は §1.1 の<strong>「二乗和誤差の最小化」と全く同じ</strong>だと分かること（下の急所）。 これが節タイトル「最小二乗 = ガウス雑音下のMLE」の意味。 <strong>つまり <a href="#ss-5-1">§5.1</a> は「予測分布を作る章」ではなく「空欄の埋め方を決め、 それが最小二乗だと暴く章」</strong>。 予測分布は その後 値を入れれば 自動的に出てくる おまけ、 という流れです。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">i.i.d. の対数尤度を一行ずつ展開する</span>
+<p class="muted"><strong>この $p(\mathbf{t} \mid \mathbf{x}, \mathbf{w}, \beta)$ の向きの読み方</strong>: 「入力 $\mathbf{x}$ と パラメータ $\mathbf{w}, \beta$ を<strong>与えたとき</strong>、 手元の出力データ $\mathbf{t}$ が生じる確率」。 これを<strong>尤度</strong>と呼びます。 一見「逆では？」と感じますが、 狙いは <strong>$\mathbf{w}$ をいろいろ動かして「データが一番ありえた $\mathbf{w}$」を選ぶ</strong>こと。 だから条件（右）に $\mathbf{w}$ を置き、 データ（左）を評価するこの向きが正しいのです（→ <a href="#ss-2-1">§2.1</a> 早見表の「尤度」の行）。</p>
+<p>仮定: 各データ点 $n$ のノイズ $\varepsilon_n \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, \beta^{-1})$ で、 入力 $x_n$ は与えられている。</p>
+<p><strong>ステップ1: 独立性から同時確率は積に</strong></p>
+<p>$$p(\mathbf{t}\mid \mathbf{x}, \mathbf{w}, \beta) = \prod_{n=1}^{N} \mathcal{N}(t_n \mid y(x_n, \mathbf{w}), \beta^{-1})$$</p>
+<div class="callout key">
+<span class="label">「あれ、x はどこ行った？」 — 消えていません</span>
+<p>気づいた人は鋭いです。 1点版の $p(t \mid x, \mathbf{w}, \beta)$ には $x$ があったのに、 ここの全データ版では $x$ が薄く見える。 理由は2つ:</p>
+<ul>
+  <li><strong>① 入力 $\mathbf{x}$ は「いつも与えられているもの」</strong>。 回帰では $x$ が"問題"、$t$ が"答え"で、 <strong>$x$ の側を予測することは ありません</strong>。 だから $x$ は いつも 棒の右（条件）に居続けます。 むしろ "いつも居る" ので、 教科書ではゴチャつき防止に <strong>表記から省く</strong>ことも多い（$p(\mathbf{t}\mid\mathbf{w},\beta)$ と書く流儀）。 このプリントでは混乱を避けるため $\mathbf{x}$ を残しました。</li>
+  <li><strong>② しかも $x$ は式の中で ちゃんと働いています</strong>。 右辺の各項 $\mathcal{N}(t_n \mid y(x_n, \mathbf{w}), \beta^{-1})$ の、 <strong>平均 $y(x_n, \mathbf{w})$ の中</strong>に $x_n$ がいます。 点 $n$ の予測の中心を決めるのに $x_n$ を使っているのです。 だから「$x$ が消えた」のではなく「条件として右に置かれ、 かつ $y$ の中に隠れている」だけ。</li>
+</ul>
+<p>まとめ: <strong>$\mathbf{x}$ は"与件"なので棒の右、 $\mathbf{w},\beta$ も"仮置きの条件"なので棒の右、 知りたい・評価したい $\mathbf{t}$ だけが棒の左</strong>。 これが尤度の向きです（<a href="#ss-2-1">§2.1</a>「条件付き確率の読み方」）。</p>
+</div>
+<p><strong>ステップ2: 対数を取って積を和に</strong> ([テクニック1])</p>
+<p>$$\ln p(\mathbf{t}\mid \mathbf{x}, \mathbf{w}, \beta) = \sum_{n=1}^{N} \ln \mathcal{N}(t_n \mid y(x_n, \mathbf{w}), \beta^{-1})$$</p>
+<p><strong>ステップ3: ガウスの対数を展開</strong>。$\mathcal{N}(t | y, \beta^{-1}) = \sqrt{\beta/(2\pi)}\,\exp\{-\tfrac{\beta}{2}(t-y)^2\}$ より:</p>
+<p>$$\ln \mathcal{N}(t_n \mid y(x_n,\mathbf{w}), \beta^{-1}) = \tfrac{1}{2}\ln \beta - \tfrac{1}{2}\ln(2\pi) - \tfrac{\beta}{2}\{t_n - y(x_n,\mathbf{w})\}^2$$</p>
+<p><strong>ステップ4: 和を取り、定数項を $E_D(\mathbf{w})$ にまとめる</strong></p>
+<p>$$\ln p(\mathbf{t}\mid \mathbf{x}, \mathbf{w}, \beta) = \frac{N}{2}\ln \beta - \frac{N}{2}\ln(2\pi) - \beta \cdot \underbrace{\frac{1}{2}\sum_n \{t_n - y(x_n,\mathbf{w})\}^2}_{= E_D(\mathbf{w})}$$</p>
+</div>
+
+<p>整理した結果:</p>
+<p>$$\ln p(\mathbf{t}\mid \mathbf{x}, \mathbf{w}, \beta) = -\beta\, E_D(\mathbf{w}) + \frac{N}{2}\ln \beta - \frac{N}{2}\ln(2\pi), \qquad E_D(\mathbf{w}) = \frac{1}{2}\sum_n \{t_n - y(x_n, \mathbf{w})\}^2$$</p>
+<div class="callout gap">
+<span class="label">MLE 予測分布 (<a href="#eq-1-64">式 1.64</a>) を かみくだくと</span>
+<p>対数尤度を最大化して「ベストな1本の曲線」 $y(x, \mathbf{w}_{\text{ML}})$ が決まると、 新しい入力 $x$ での予測は</p>
+<p id="eq-1-64">$$p(t \mid x, \mathbf{w}_{\text{ML}}, \beta_{\text{ML}}) = \mathcal{N}(t \mid y(x, \mathbf{w}_{\text{ML}}), \beta_{\text{ML}}^{-1}) \qquad \text{(式 1.64)}$$</p>
+<p><strong>見ての通り、 形は最初のモデル式 (912行) と同じ</strong>。 違いは 添字 $_{\text{ML}}$ がついた点、 つまり <strong>空欄だった $\mathbf{w}, \beta$ に「最大化で決まった具体的な値」が入っている</strong>こと。 形はタダで書けても、 この $\mathbf{w}_{\text{ML}}, \beta_{\text{ML}}$ は 上の最大化を やって初めて手に入ります。</p>
+<p class="muted" id="eq-1-63">特に <strong>誤差バーの幅 $\beta_{\text{ML}}^{-1}$ は 最小二乗だけでは出てきません</strong>。 尤度を $\beta$ について最大化すると $\beta_{\text{ML}}^{-1} = \tfrac{1}{N}\sum_n \{t_n - y(x_n,\mathbf{w}_{\text{ML}})\}^2$（＝残差の二乗平均、 <strong>PRML <a href="#eq-1-63">式 1.63</a></strong>）。 「データにどれだけフィットし切れなかったか（残差）」から 雑音の大きさを見積もる、 という尤度ならではの量です。 PRML §1.2.5 も「まず $\mathbf{w}_{\text{ML}}$ を決め、 続いて $\beta_{\text{ML}}$ を求める（§1.2.4 の単純ガウスと同じ手順）」と明記しています。</p>
+<div class="callout key">
+<span class="label">なぜ $\beta_{\text{ML}}$ はベクトルでなく スカラー（1つの数）なのか</span>
+<p>$\mathbf{w}$ がベクトルなのに $\beta$ が1つの数なのは、 <strong>2つが表すものが違う</strong>からです。</p>
+<ul>
+  <li><strong>$\mathbf{w}$ = 曲線の「形」</strong>。 $M$ 次多項式 $y = w_0 + w_1 x + \cdots + w_M x^M$ は、 $M{+}1$ 個の係数で 形が決まります。 形を表すには たくさんの数が要る ⇒ $\mathbf{w}$ は $M{+}1$ 次元の<strong>ベクトル</strong>。</li>
+  <li><strong>$\beta$ = ノイズの「大きさ」</strong>。 <a href="#fig7">図7</a>の赤いベルの<strong>幅</strong>のことです。 このモデルは「どのデータ点でも ノイズの大きさは同じ」（$\varepsilon_n \sim \mathcal{N}(0, \beta^{-1})$ が 全ての $n$ で<strong>共通の $\beta$</strong>）と仮定しています。 だから 見積もる雑音レベルは <strong>たった1つ</strong> ⇒ $\beta$ は<strong>スカラー</strong>。</li>
+</ul>
+<p>ひとことで: <strong>中心（曲線）は たくさんの数で形を作る → ベクトル $\mathbf{w}$。 散らばり（ベルの幅）は どこでも同じ1つの数で足りる → スカラー $\beta$。</strong> <a href="#fig7">図7</a> で言えば、 青い曲線をくねらせるのが $\mathbf{w}$、 赤いベルの太さを決めるのが $\beta$ です。</p>
+<p class="muted">補足: もし「点ごとに ノイズの大きさが違う」設定（heteroscedastic）にすれば $\beta$ も点ごと＝複数になりますが、 第1章は<strong>全点 共通ノイズ</strong>を仮定するので $\beta$ は1個です。 なお $\beta_{\text{ML}}^{-1}$ の式は N 個の残差を<strong>1つの数に平均</strong>している点からも「全点を代表する1つの雑音レベル」だと読めます。</p>
+</div>
+<p>かみくだくと、<strong>「決めた1本の曲線のまわりに、 どこに行っても同じ幅 $\beta_{\text{ML}}^{-1}$ の誤差バーをつけたもの」</strong>。 天気予報でいえば「明日も明後日も1年後も、 ずっと同じ『±3℃』で予報します」と言っているような状態。 この『どこでも同じ幅』が後で問題になります（<a href="#ss-5-3">§5.3</a> でフルベイズと比べます）。</p>
+</div>
+
+<div class="callout key">
+<span class="label">急所</span>
+<p>$\mathbf{w}$ を含む項は <strong>$-\beta\, E_D(\mathbf{w})$ だけ</strong>。よって対数尤度の最大化 $\Longleftrightarrow$ $E_D(\mathbf{w})$ の最小化。これが §1.1 で「とりあえず二乗和を最小化」した深い根拠。</p>
+</div>
+
+<h3 id="ss-5-2">5.2 MAP推定 = 正則化付き最小二乗</h3>
+
+<div class="callout gap">
+<span class="label">まず直感: MAP推定って何?</span>
+<p>ひとことで言うと、<strong>MAP推定 = 最小二乗に「重みを大きくしすぎるな」という罰金を足しただけ</strong>です。 §1.4 で見た、 M=9 の多項式が グニャグニャに暴れて 係数 $w_9$ が 約 12万 まで膨れ上がった あの現象。 あれを罰金で抑え込む仕組み、 と思ってください。</p>
+<p><strong>なぜ罰金が出てくるのか?</strong> 確率の言葉で言うとこうです。 「重み $\mathbf{w}$ は たぶん 0 の近くにあるだろう」という<strong>事前の思い込み（事前分布）</strong>を、 データを見る前に持っておく。 そして データを見た後の確からしさ（事後）を</p>
+<p style="text-align:center"><strong>事後 ∝ （データとの当てはまり） × （事前の思い込み）</strong></p>
+<p>と考え、 これが最大になる $\mathbf{w}$ を選ぶ。 これが MAP（事後確率最大）です。 思い込みが「$\mathbf{w}$ は小さいはず」なので、 大きな $\mathbf{w}$ には 自動的に罰金がかかる、 というわけ。</p>
+</div>
+
+<p>式で確認しましょう。 <strong>ここは本（PRML）でも結果がほぼ ポンと出る所</strong>なので（PRML は <a href="#eq-1-65">式 1.65</a>→<a href="#eq-1-66">1.66</a>→<a href="#eq-1-67">1.67</a> と並べて「負の対数を取って合体」とだけ言う）、 間を 5 ステップに割って埋めます。</p>
+
+<div class="callout gap">
+<span class="label">行間: 「ガウス事前を入れる」から「事後の負対数」までの5ステップ</span>
+<p><strong>ステップA: ベイズ則「事後 ∝ 尤度 × 事前」</strong>（§3.2）。 $\mathbf{w}$ の事後分布は</p>
+<p id="eq-1-66">$$p(\mathbf{w}\mid \mathbf{x}, \mathbf{t}, \alpha, \beta) \;\propto\; \underbrace{p(\mathbf{t}\mid \mathbf{x}, \mathbf{w}, \beta)}_{\text{尤度（§5.1）}} \cdot \underbrace{p(\mathbf{w}\mid \alpha)}_{\text{事前（形は次のBで決める）}} \qquad \text{(式 1.66)}$$</p>
+<p>ここで <strong>事前 $p(\mathbf{w}\mid\alpha)$</strong> は「$\mathbf{w}$ についての思い込み」を表す分布です。 この段階では <strong>まだ形を決めていません</strong>（記号だけ）。 形を決めるのが次のステップB。</p>
+<p><strong>ステップB: 事前を「ガウス」と決める</strong>（<a href="#eq-1-65">式 1.65</a>）。 ここで初めて、 事前分布の<strong>具体的な形</strong>を選びます。 選ぶのは<strong>ガウス分布</strong> — この節の冒頭で言った「重み $\mathbf{w}$ は 0 を中心に散らばっているはず」という思い込みを、 そのまま数式にしたものです（平均 0、 ばらつきが $\alpha^{-1}$ のガウス）。 それを指数の形まで開くと、 肩に $-\tfrac{\alpha}{2}\mathbf{w}^\top\mathbf{w}$ が現れます:</p>
+<p id="eq-1-65">$$p(\mathbf{w}\mid \alpha) = \mathcal{N}(\mathbf{w}\mid \mathbf{0}, \alpha^{-1}\mathbf{I}) = \left(\tfrac{\alpha}{2\pi}\right)^{(M+1)/2}\exp\!\left(-\tfrac{\alpha}{2}\mathbf{w}^\top\mathbf{w}\right) \qquad \text{(式 1.65)}$$</p>
+<p><strong>ステップC: 負の対数を取る</strong>。 $\ln$ は積を和に変える（[テクニック1]）ので、 マイナスを付けて:</p>
+<p>$$-\ln(\text{事後}) = \underbrace{-\ln p(\mathbf{t}\mid\mathbf{x},\mathbf{w},\beta)}_{\text{尤度の負対数}} \;\; \underbrace{-\ln p(\mathbf{w}\mid\alpha)}_{\text{事前の負対数}} \;+\; \text{const}$$</p>
+<p>（分母 $p(\mathbf{x},\mathbf{t})$ は $\mathbf{w}$ に依らないので const に入る。）</p>
+<p><strong>ステップD: 尤度の負対数</strong> は <a href="#ss-5-1">§5.1</a> で出した結果そのまま:</p>
+<p>$$-\ln p(\mathbf{t}\mid\mathbf{x},\mathbf{w},\beta) = \beta\, E_D(\mathbf{w}) + \text{const} = \tfrac{\beta}{2}\sum_n\{y(x_n,\mathbf{w})-t_n\}^2 + \text{const}$$</p>
+<p><strong>ステップE: 事前の負対数</strong> は ステップB の指数の肩のマイナスを取るだけ:</p>
+<p>$$-\ln p(\mathbf{w}\mid\alpha) = \tfrac{\alpha}{2}\mathbf{w}^\top\mathbf{w} + \text{const}$$</p>
+<p>D と E を ステップC に足し合わせれば、 下の結果です。</p>
+</div>
+
+<p>結果（<a href="#eq-1-67">式 1.67</a>）:</p>
+<p id="eq-1-67">$$-\ln p(\mathbf{w}\mid \cdots) = \underbrace{\frac{\beta}{2} \sum_n \{y(x_n,\mathbf{w}) - t_n\}^2}_{\text{データとのズレ(=罰金なしの最小二乗)}} + \underbrace{\frac{\alpha}{2}\, \mathbf{w}^\top \mathbf{w}}_{\text{重みが大きいことへの罰金}} \;+\; \text{const}$$</p>
+
+<div class="callout key">
+<span class="label">この「const」は 何について const なのか? — β についてではない</span>
+<p>ここが混乱しやすい所です。 <strong>const は「$\mathbf{w}$ に依存しない項」をまとめたもの</strong>であって、 β について定数という意味ではありません。</p>
+<p><strong>なぜ $\mathbf{w}$ 基準なのか</strong>: いま目的は MAP 推定、 つまり<strong>この式を $\mathbf{w}$ について最小化して $\mathbf{w}_{\text{MAP}}$ を求める</strong>こと。 最小化する変数は $\mathbf{w}$ だけ。 だから「$\mathbf{w}$ を動かしても変わらない項」は、 最小値の<strong>場所</strong>に影響しないので、 ぜんぶ const に放り込んでよいのです。 const の中身は具体的には:</p>
+<p>$$\text{const} = \underbrace{-\tfrac{N}{2}\ln\beta}_{\text{βを含むが w 無し}} + \underbrace{-\tfrac{M+1}{2}\ln\alpha}_{\text{αを含むが w 無し}} + (\text{2πの項}) + \underbrace{\ln p(\mathbf{x},\mathbf{t})}_{\text{周辺尤度}}$$</p>
+<p>見ての通り、 <strong>const には β や α を含む項が入っています</strong>。 だから <strong>β を動かせば const は変わります（＝β については定数ではない）</strong>。 「$\mathbf{w}$ について定数」というだけ。 いまは β を「固定された既知の値（ハイパーパラメータ）」として扱っているので、 $\mathbf{w}_{\text{MAP}}$ を求める計算では これらを定数扱いできる、 というわけです。</p>
+<p><strong>もし β 自体も推定したくなったら</strong>: その時は const に隠した $-\tfrac{N}{2}\ln\beta$ を表に出して、 今度は β について微分してゼロと置きます。 それがまさに §5.1 で出した β の最尤推定（<a href="#eq-1-63">式 1.63</a>、 残差の二乗平均）。 <strong>「何を変数とみなすか」で const の中身が変わる</strong>、 というのが要点です。</p>
+</div>
+<p>右の第2項 $\tfrac{\alpha}{2}\mathbf{w}^\top\mathbf{w}$ が まさに罰金（$\mathbf{w}$ が大きいほど大きくなる）。 これは正則化係数 $\lambda = \alpha/\beta$ の二乗誤差と ぴったり一致します。 つまり<strong>正則化項の正体は「事前分布の対数」だった</strong>わけです。 $\alpha$ は事前の精度（$\mathbf{w}$ を 0 に押さえる強さ）、$\beta$ は雑音の精度。 比 $\alpha/\beta$ が罰金の強さを決めます。</p>
+
+<div class="callout gap">
+<span class="label">具体例: 暴走した係数が罰金で引き戻される</span>
+<p>§1.4 の表で見た通り、 罰金なし（ただの最小二乗）だと M=9 で 係数が $w_9 \approx 125{,}201$ と暴走しました。 ここに「$\mathbf{w}$ は小さいはず」という事前（=罰金）を入れると、 同じ係数が <strong>72.68 程度まで引き戻され</strong>、 曲線も なめらかになります。 これが MAP の効き目を 数字で見たもの。 罰金の強さ $\lambda = \alpha/\beta$ を上げるほど、 $\mathbf{w}$ は強く 0 へ引き寄せられます。</p>
+</div>
+
+<p class="muted">この事後を最大にする点 $\mathbf{w}_{\text{MAP}} = \arg\max_{\mathbf{w}} p(\mathbf{w}\mid \mathcal{D})$ を<strong>MAP推定</strong>（Maximum A Posteriori、 事後確率最大）と呼びます (§3 の表参照)。</p>
+<p class="muted"><strong>α と β はどう決めるか</strong>: 比 $\lambda = \alpha/\beta$ で正則化強度が決まりますが、 絶対値の決め方は3通り — (i) クロスバリデーション (<a href="#sec6">§6</a>)、 (ii) <strong>経験ベイズ / エビデンス最大化</strong> (§3.5 で扱う)、 (iii) 領域知識から固定値を与える。 PRML 第1章では「与件」として扱い、 §3.5 で本格的に推定法を導入します。</p>
+
+<h3 id="ss-5-3">5.3 完全なベイズ（§1.2.6, <a href="#eq-1-69">式 1.69</a>, 1.71）</h3>
+
+<div class="callout gap">
+<span class="label">まず直感: フルベイズは「1本の曲線」でなく「曲線の群れ」で考える</span>
+<p>MLE も MAP も、 最後に<strong>ベストな曲線を1本</strong>選んで「これが答え」とします。 フルベイズは そこが違う。 <strong>データと矛盾しない曲線を全部、 もっともらしさで重みづけして残し、 予測のときは全員の意見を平均する</strong>。</p>
+<p><strong>何が嬉しいのか</strong>を具体例で。 データ点が $x$ の 0〜0.5 あたりに固まっているとします。 ここで「データの無い遠く」 $x = 0.9$ を予測させると:</p>
+<ul>
+  <li><strong>MLE / MAP（1本の曲線）</strong>: データ付近と同じ「±0.2」みたいな <strong>同じ幅の誤差</strong>を、 データの無い $x=0.9$ でも 平気で出す。 「知らない場所なのに自信満々」で危険。</li>
+  <li><strong>フルベイズ（曲線の群れ）</strong>: データ付近では 群れの意見が一致するので 誤差は小さい。 でも $x=0.9$ では 残った曲線たちの予測が バラバラに散る ので、 誤差が「±0.7」のように<strong>自動的に広がる</strong>。 「ここは知らないから自信ない」と 正直に言える。</li>
+</ul>
+<p>この「データから離れると誤差が広がる」性質こそ、 フルベイズが MLE/MAP に勝る最大のポイントです（この節の最後の<strong><a href="#fig8">図8</a></strong>が、 まさにこの様子を描いています）。</p>
+</div>
+
+<p>では式で。 ベストな $\mathbf{w}$ を1個選ぶのではなく、 ありうる $\mathbf{w}$ を<strong>すべて</strong>、 その確からしさ $p(\mathbf{w}\mid \mathbf{x},\mathbf{t})$ で重みづけて 足し合わせ（積分し）ます:</p>
+<p id="eq-1-68">$$p(t\mid x, \mathbf{x}, \mathbf{t}) = \int p(t\mid x, \mathbf{w})\, p(\mathbf{w}\mid \mathbf{x}, \mathbf{t})\, d\mathbf{w} \qquad \text{(式 1.68)}$$</p>
+<p>この積分はガウス×ガウスで<strong>ガウスのまま閉じ</strong>、結果は次のガウス (<a href="#eq-1-69">式 1.69</a>):</p>
+<p id="eq-1-69">$$p(t\mid x, \mathbf{x}, \mathbf{t}) = \mathcal{N}\!\left(t \,\middle|\, m(x),\, s^2(x)\right)$$</p>
+<span id="eq-1-72"></span><p class="muted" id="eq-1-70"><strong>記号の中身</strong>: $\boldsymbol{\phi}(x) = (1, x, x^2, \ldots, x^M)^\top$ は入力 $x$ を基底に通した<strong>基底ベクトル</strong>（§1 で出た計画行列 $\Phi$ の1行に相当。$\Phi$ は学習データ全点を縦に積んだ行列、$\boldsymbol{\phi}(x)$ は新しい1点 $x$ のベクトル）。 $\mathbf{S}$ は $\mathbf{w}$ の<strong>事後共分散行列</strong>で、その逆が $\mathbf{S}^{-1} = \alpha \mathbf{I} + \beta \sum_n \boldsymbol{\phi}(x_n)\boldsymbol{\phi}(x_n)^\top$（<a href="#eq-1-72">式 1.72</a>、 導出は §3.3）。 平均 $m(x) = \beta\, \boldsymbol{\phi}(x)^\top \mathbf{S} \sum_n \boldsymbol{\phi}(x_n)\, t_n$（<a href="#eq-1-70">式 1.70</a>）は、 $\mathbf{w}$ の事後平均（ガウス事後なので MAP 点と一致）で評価した予測 $y(x, \mathbf{w})$ に等しい。</p>
+
+<div class="callout key">
+<span class="label">最重要結果: 予測分散の2項分解（<a href="#eq-1-71">式 1.71</a>）</span>
+<p id="eq-1-71">$$s^2(x) \;=\; \underbrace{\beta^{-1}}_{\text{ノイズ起源 (irreducible)}} \;+\; \underbrace{\boldsymbol{\phi}(x)^\top \mathbf{S}\, \boldsymbol{\phi}(x)}_{\text{パラメータ不確実性起源 (x 依存!)}} \qquad \text{(式 1.71)}$$</p>
+<ul>
+  <li>第1項 $\beta^{-1}$ = データ生成時のノイズ。 これは MLE 予測 (1.64) も持っているもので、データを増やしても消えない</li>
+  <li>第2項 = $\mathbf{w}$ の不確実性が予測に反映された分。 <strong>$x$ に依存</strong>し、訓練データから離れた $x$ で大きくなる ⇒ 「自信がない」と言える。 <strong>さっきの例で $x=0.9$ で誤差が広がった正体が、 この第2項です。</strong></li>
+</ul>
+<p>第1項だけ（=MLE/MAP）だと、 誤差バーは どこでも同じ幅 $\beta^{-1}$。 だから「データから離れた領域でも自信満々」という困った振る舞いになる。 第2項が加わって はじめて「知らない場所では誤差が広がる」正直な予測になります（下の<a href="#fig8">図8</a>）。</p>
+</div>
+
+<figure class="figure" id="fig8">
+<img src="figs/fig7_bayes_predictive.svg" alt="ベイズ予測分布: データのある左側では誤差の帯が細く、データの無い右側で帯が広がる">
+<figcaption><strong>図8.</strong> ベイズ予測分布の実例（多項式基底で予測平均 $m(x)$ と不確実性帯 $\pm s(x)$ を厳密計算）。 データは $x \le 0.6$ に偏在。 <strong>データのある左側では帯が細く（自信あり）、 データの無い右側では帯が自動的に広がる（自信なし）</strong>。 MLE/MAP なら この帯は どこでも同じ幅 $\beta^{-1}$ のまま — これがフルベイズとの決定的な違い。 （PRML 図1.17 に対応）</figcaption>
+</figure>
+
+<p class="muted">「閉じる」のは、指数の肩がすべて $\mathbf{w}$ の二次形式 → 和も二次形式 → 平方完成でガウスに戻るから（詳しくは §2.3.3 で再訪、式 2.116）。 なお $\alpha, \beta$ のようなモデルパラメータの分布を制御するパラメータを<strong>ハイパーパラメータ</strong>と呼びます (§3.5 で経験ベイズ的にデータから推定する手法を扱う)。</p>
+
+<h2 id="sec6">6. §1.3 モデル選択</h2>
+
+<p>「良い $M$ や $\lambda$ をどう選ぶか」を扱います。 訓練誤差は $M$ を上げれば必ず下がる（過学習）ので、 <strong>汎化誤差を推定する仕組み</strong> が必要。</p>
+
+<h3 id="ss-6-1">6.1 ホールドアウト・交差検証 (CV)</h3>
+<ul>
+  <li><strong>ホールドアウト</strong>: データを訓練/検証/テストに分け、検証集合で $M, \lambda$ を選ぶ。 単純だが、データが少ないと検証集合のばらつきで不安定</li>
+  <li><strong>K-fold CV</strong>: データを $K$ 分割、 $K$ 回「(K-1) 個で学習、1 個で評価」を繰り返し平均</li>
+  <li><strong>Leave-one-out CV</strong>: $K = N$ の極限。 1 点だけ検証に回す</li>
+</ul>
+<div class="callout gap">
+<span class="label">具体例: 5-fold 交差検証を数で追う</span>
+<p>手元に 100個のデータがあり、 正則化の強さ $\lambda$ を決めたいとします。 <strong>5-fold CV</strong> では、 データを 20個ずつ 5組に分けて:</p>
+<ul>
+  <li>1回目: 組1を「検証」、 残り 80個で学習 → 組1での誤差を記録</li>
+  <li>2回目: 組2を「検証」、 残り 80個で学習 → 組2での誤差を記録</li>
+  <li>… 全部の組が 1度ずつ 検証役になるまで 5回くり返す</li>
+</ul>
+<p>5回ぶんの検証誤差を平均したものが、 その $\lambda$ の「成績」。 いくつかの $\lambda$ で これを比べて、 いちばん成績のよい $\lambda$ を選びます。 「全データを 学習にも検証にも 使い回せる」のが利点で、 データが少ないときに効く。 欠点は、 これを $\lambda$ の候補ごとに 5回ずつ やるので 計算が重いこと。</p>
+</div>
+<p><strong>欠点</strong>: 学習を $K$ 倍に増やすため計算重い。 さらに複数ハイパラ (例: $\lambda$ と $M$ の両方) を一緒に探索すると組合せ爆発で実用困難（PRML p.33）。</p>
+
+<figure class="figure" id="fig9">
+<img src="figs/fig11_kfold.svg" alt="5-fold交差検証: 各回ちがうブロックを検証に使う図">
+<figcaption><strong>図9.</strong> 5-fold 交差検証。 データを5ブロックに分け、 毎回ちがう1ブロック（オレンジ）を検証に、 残り4ブロック（青）を学習に使う。 これを5回くり返して 検証誤差を平均します。</figcaption>
+</figure>
+
+<h3 id="ss-6-2">6.2 情報量規準</h3>
+<p>学習を 1 回で済ませる代わりに、 訓練対数尤度に過学習ペナルティを加える:</p>
+<p id="eq-1-73">$$\mathrm{AIC} = \ln p(\mathcal{D} \mid \mathbf{w}_{\text{ML}}) - M \qquad \text{(式 1.73)}$$</p>
+<p>$M$ はパラメータ数。 <strong>パラメータが多いほど罰金</strong>を引くことで過学習を抑える。 BIC (式 4.139) はベイズ的根拠から $M$ ではなく $\tfrac{M}{2}\ln N$ を引く（パラメータ数だけでなくデータ数にも依存）。</p>
+<p class="muted">具体例: M=3 のモデルと M=9 のモデルが訓練データに 同じくらい当てはまる（訓練尤度が同じ）なら、 AIC は M=9 から 9点、 M=3 から 3点 の罰金を引きます。 だから 同点なら シンプルな M=3 が勝つ。 「迷ったら単純なモデル」を 数式で表したもの、 と思えばよい。</p>
+<p>欠点: 「実効的なパラメータ数」を反映しないので、 正則化された複雑モデル (実効的にはパラメータが少ない) で過小評価される傾向。</p>
+
+<h3 id="ss-6-3">6.3 ベイズのエビデンス（§3.4 で詳細）</h3>
+<p>モデル比較を確率の言葉で。 各モデル $\mathcal{M}_i$ に対し<strong>周辺尤度 (marginal likelihood / evidence)</strong> $p(\mathcal{D} \mid \mathcal{M}_i)$ を計算し、それで比較。 自動的に「複雑すぎる」モデルにペナルティが入る (Occam's razor が自然に発動)。</p>
+
+<p class="muted">第1章では実用上は CV で十分、と Bishop は書いています。 ベイズエビデンスは §3.4, §4.4 で本格的に扱う。</p>
+
+<h2 id="sec7">7. §1.4 次元の呪い</h2>
+
+<h3 id="ss-7-1">7.1 不気味な3つの現象</h3>
+
+<div class="callout gap">
+<span class="label">たとえ: 高次元では「ほとんど皮」になる</span>
+<p>「次元の呪い」とは、 次元（=変数の数）が増えると、 私たちの 3次元的な直感が ことごとく裏切られる現象のこと。 まず イメージを掴みましょう。</p>
+<p>オレンジを思い浮かべてください。 ふつうの3次元のオレンジなら、 皮（外側の薄い層）が占める体積は ごくわずかで、 中身（果肉）が大部分ですよね。 ところが <strong>高次元のオレンジでは、 体積の ほぼ全部が「皮」に集まり、 中身はスカスカ</strong>になります。 「データ点も ほとんどが 端っこに 散らばってしまい、 中心付近は からっぽ」。 下に挙げる3つの現象は、 どれも この「直感が効かなくなる」話の 別々の顔です。</p>
+</div>
+
+<h4>(a) 立方体: 体積はシェル（皮）に集中</h4>
+<p>D次元立方体 $[-1, 1]^D$ の内側 $[-r, r]^D$ が占める体積比は $r^D$。 $r = 0.9$ で固定して D だけ変えると:</p>
+<table>
+<thead>
+<tr><th>$D$</th><th>2</th><th>10</th><th>100</th><th>500</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row">内側 $r^D$ の比率</th><td>0.81</td><td>0.35</td><td>$2.7\times 10^{-5}$</td><td>$1.3\times 10^{-23}$</td></tr>
+<tr><th scope="row">シェル $1-r^D$ の比率</th><td>0.19</td><td>0.65</td><td>$\approx 1$</td><td>$\approx 1$</td></tr>
+</tbody>
+</table>
+<p class="muted">「シェル」と「皮」は同じものを指します（厚さ $1-r$ の外側帯）。</p>
+
+<figure class="figure" id="fig10">
+<img src="figs/fig2_curse_cube.svg" alt="D次元立方体: シェル内体積割合が D とともに 1 に収束">
+<figcaption><strong>図10.</strong> D次元立方体の「厚さ $\varepsilon$ のシェル」に含まれる体積割合 $1 - (1-\varepsilon)^D$。たとえ $\varepsilon = 0.01$ (内側 99% の立方体) でも、D = 100 では体積の 63% が皮に。</figcaption>
+</figure>
+
+<h4>(b) 球: 体積も表面近くに集中</h4>
+<p>D次元球の半径 $[0, r]$ の体積比 $= r^D$ → 同じく外側の薄い殻に集中。 半径 $r=1$ の球と $r=1-\varepsilon$ の球を考えると、 厚さ $\varepsilon$ のシェル内の体積比は</p>
+<p id="eq-1-76">$$1 - (1-\varepsilon)^D \qquad \text{(式 1.76)}$$</p>
+<p>立方体の (a) と同じ形。 $D$ 大で急速に 1 に近づきます。</p>
+<h4>(b') 多項式モデルのパラメータ数: $D^M$ で指数爆発（式 1.74）</h4>
+<p>$D$ 次元入力 $\mathbf{x} = (x_1, \ldots, x_D)$ に対し $M$ 次までの多項式を作ると、 独立な係数の数は $D^M$ オーダー (式 1.74、 演習 1.16 で証明)。 具体的に:</p>
+<table>
+<thead><tr><th>$D$</th><th>$M=2$</th><th>$M=3$</th><th>$M=4$</th></tr></thead>
+<tbody>
+<tr><th scope="row">パラメータ数 $\sim$</th><td>$D^2$</td><td>$D^3$</td><td>$D^4$</td></tr>
+<tr><th scope="row">$D=10$</th><td>$\approx 100$</td><td>$\approx 1{,}000$</td><td>$\approx 10{,}000$</td></tr>
+<tr><th scope="row">$D=100$</th><td>$\approx 10^4$</td><td>$\approx 10^6$</td><td>$\approx 10^8$</td></tr>
+</tbody>
+</table>
+<p>これだけパラメータがあれば訓練データに完全フィットできるが、 「データから推定する」段階で必要なサンプル数も指数爆発。 ⇒ <strong>素朴な多項式モデルは高次元で詰む</strong>。 §3 以降の基底関数モデル、 <a href="#sec6">§6</a> のカーネル法、 <a href="#sec7">§7</a> のスパース手法など、 すべてこの呪いを別の形で回避するための工夫です。</p>
+
+<h4>(c) ガウスでさえ球殻に集中（演習 1.20）</h4>
+<p>「中心がピーク」のはずのガウスなのに、半径方向の密度 $p(r)$ の最大値は <strong>$\hat{r} \approx \sigma\sqrt{D}$</strong>。中心 $r = 0$ ではありません。</p>
+
+<p class="muted">準備: $D$次元単位球の表面積は $S_D = 2\pi^{D/2} / \Gamma(D/2)$（式 1.142）。ここで <strong>$\Gamma(z) = \int_0^{\infty} t^{z-1} e^{-t}\, dt$ はガンマ関数</strong>で、$\Gamma(n) = (n-1)!$ の連続版です。具体的に $D=2$ で $S_2 = 2\pi$ (円周)、$D=3$ で $S_3 = 4\pi$ (球の表面積) になります。</p>
+
+<div class="callout gap">
+<span class="label">行間: なぜ球殻に集中するか</span>
+<p>ガウス密度 $\exp(-r^2/(2\sigma^2))$ は $r=0$ で最大。だが「半径 $r$ の球殻」の<strong>体積</strong>は $r^{D-1}$ で増えます ($D=2$ なら円周 $2\pi r$, $D=3$ なら表面積 $4\pi r^2$, 一般に $S_D\, r^{D-1}$)。</p>
+<p>$$p(r) \;\propto\; \underbrace{r^{D-1}}_{\text{体積 (増加)}} \cdot \underbrace{\exp\!\left(-\frac{r^2}{2\sigma^2}\right)}_{\text{密度 (減少)}}$$</p>
+<p><strong>増える項と減る項の積</strong>なので、どこかにピークができる。微分してゼロにする計算を、積の微分公式 $(uv)' = u'v + uv'$ で展開します:</p>
+<p>$u = r^{D-1}, \; v = e^{-r^2/(2\sigma^2)}$ とおくと:</p>
+<p>$$u' = (D-1)\, r^{D-2}, \qquad v' = -\frac{r}{\sigma^2}\, e^{-r^2/(2\sigma^2)} \quad \text{(連鎖律)}$$</p>
+<p>$$\frac{d}{dr}\!\left[r^{D-1} e^{-r^2/(2\sigma^2)}\right] = (D-1)\, r^{D-2} e^{-r^2/(2\sigma^2)} - r^{D-1} \cdot \frac{r}{\sigma^2}\, e^{-r^2/(2\sigma^2)}$$</p>
+<p>共通因子 $r^{D-2} e^{-r^2/(2\sigma^2)}$ を括り出して（$r>0$ ではこれは正なので不等号も変わらない）:</p>
+<p>$$r^{D-2} e^{-r^2/(2\sigma^2)} \cdot \left[(D-1) - \frac{r^2}{\sigma^2}\right] = 0$$</p>
+<p>$r>0$ ではカッコ内がゼロ ⇒</p>
+<p>$$\frac{r^2}{\sigma^2} = D - 1 \;\Longleftrightarrow\; \hat{r} = \sigma\sqrt{D-1} \approx \sigma\sqrt{D} \quad (D \text{ 大})$$</p>
+<p>つまり高次元ガウスは <strong>$\sigma\sqrt{D}$ 付近の薄い球殻に集中</strong> しています (中心ではない)。これがガウスにすら効く「次元の呪い」。</p>
+</div>
+
+<figure class="figure" id="fig11">
+<img src="figs/fig3_highdim_gaussian.svg" alt="高次元ガウス N(0, I) の半径方向密度 p(r): D=1 では原点付近にピーク、D=100 では √99 付近の球殻にピークが移る">
+<figcaption><strong>図11.</strong> <strong>標準ガウス $\mathcal{N}(\mathbf{0}, \mathbf{I})$（$\sigma=1$ の場合）</strong>の半径方向密度 $p(r) \propto r^{D-1} e^{-r^2/2}$。 $D$ が大きくなるとピークが原点から離れ、$\hat{r} = \sqrt{D-1}$ の球殻に質量が集中する (各曲線はピーク値で正規化)。一般の $\sigma$ では $\hat{r} = \sigma\sqrt{D-1}$。</figcaption>
+</figure>
+
+<h3 id="ss-7-2">7.2 機械学習における意味</h3>
+
+<p>「次元の呪い」が ML に与える影響は、大きく <strong>距離の均質化</strong>、 <strong>サンプルの希薄化</strong>、そして<strong>密度推定の困難化</strong> の3点。これらを ML はどう切り抜けるかまで含めて整理します。</p>
+
+<h4>(a) 距離の均質化</h4>
+<p>$D$ 次元一様分布から多数の点を抽出すると、任意の参照点に対する「最近傍までの距離 $d_{\min}$」と「最遠傍までの距離 $d_{\max}$」の比が <strong>1 に近づきます</strong>:</p>
+<p>$$\frac{d_{\max} - d_{\min}}{d_{\min}} \xrightarrow{D \to \infty} 0$$</p>
+<p>これは $k$-NN、放射基底関数 (RBF) ネットワーク、ガウシアン・カーネル SVM など <strong>距離ベース手法の根幹</strong> を崩します。「近い」という概念が消えれば「近傍を見て答える」戦略が無意味になる。</p>
+
+<h4>(b) サンプルの希薄化</h4>
+<p>単位立方体 $[0,1]^D$ を一辺 $\ell$ のグリッドで分割すると $\ell^{-D}$ 個のセルができます。各セルに 1 点欲しいだけで指数的に多くのサンプルが必要 (1次元なら 10 点で十分でも、10次元では $10^{10}$ 点)。 ⇒ <strong>「データから密度を推定する」型の手法は指数的にコストが膨らむ</strong>。これがヒストグラム法やナイーブな KDE が高次元で機能しない理由。</p>
+
+<h4>(c) 密度推定の困難化</h4>
+<p>(b) の帰結ですが、高次元ガウスが球殻に集中するように、<strong>典型的な点 (typical set) はモード周辺にいない</strong>。最尤点推定が「代表値」を返してくれない場合があり、サンプリングや積分でも有限サンプルでは球殻ばかり当たって中心は永遠に当たらない (これは MCMC の混合困難にも繋がる)。</p>
+<p class="muted"><strong>MAP 推定・勾配法への影響</strong>: 最尤/MAP の値そのものは数値最適化で得られるが、 そこから「モード近傍からのサンプルで期待値を計算」する素朴な戦略は破綻する (球殻に質量があるので有限サンプル平均がモードの値で代表されない)。 これが MCMC の Hamiltonian Monte Carlo のような「球殻を効率的に動く」サンプラーが PRML 第11章で必要になる動機。</p>
+
+<h4>(d) ML が高次元で機能する理由 — 多様体仮説 (manifold hypothesis)</h4>
+<p>実世界の高次元データ (画像、音声、テキスト) は実は<strong>低次元の多様体に集中</strong>している、という経験則:</p>
+<ul>
+  <li>例: 128×128 のグレースケール画像は名目上 16384 次元だが、自然画像の集合はおよそ多様体次元 ~50 の構造に潜在的に住む</li>
+  <li>従って "見かけの次元 $D$" ではなく "本質的次元 $d \ll D$" を見ればよい</li>
+</ul>
+
+<h4>(e) PRML が示す「切り抜け策」</h4>
+<p>本書全体を通じて繰り返し登場する次元の呪いへの対処を、第1章末で予告 (§1.4 末尾) しています:</p>
+<table>
+<thead><tr><th>戦略</th><th>仕組み</th><th>該当章</th></tr></thead>
+<tbody>
+<tr><td><strong>滑らかさ仮定</strong></td><td>$\mathbf{x}$ がわずかに動けば出力もわずかに動く ⇒ 局所線形近似で間引き</td><td><a href="#sec6">§6</a> カーネル法 / §6.4 ガウス過程</td></tr>
+<tr><td><strong>次元削減</strong></td><td>低次元表現に射影してから学習</td><td>§12 PCA / オートエンコーダ</td></tr>
+<tr><td><strong>疎な特徴選択</strong></td><td>関係する説明変数だけ残す ($L_1$ 正則化)</td><td>§3.1.4 lasso 系</td></tr>
+<tr><td><strong>モデルの構造化</strong></td><td>変数間の依存関係をグラフで明示し有効パラメータ数を抑える</td><td><a href="#sec8">§8</a> グラフィカルモデル</td></tr>
+<tr><td><strong>正則化 / 事前分布</strong></td><td>滑らかな関数だけを許す事前を入れる ⇒ 事実上の自由度を絞る</td><td>§1.3, §3</td></tr>
+</tbody>
+</table>
+
+<div class="callout key">
+<span class="label">本章末からのテイクアウェイ</span>
+<p>「<strong>高次元は厄介だが、実データは多様体に住む</strong>」「<strong>ML は多様体構造を仮定／学習することで次元の呪いから逃げる</strong>」が PRML 全体の通奏低音。これ以降の章で「なぜカーネルか」「なぜ次元削減か」「なぜグラフィカルモデルか」を問うとき、答えはすべてここから来ます。</p>
+</div>
+
+<p class="muted">参考: <a href="https://qiita.com/tn1031/items/96e7131cd41df1aebe85">Qiita 次元の呪い</a> / <a href="https://windfall.hatenablog.com/entry/2015/07/02/084623">蛍光ペンの交差点 サクサクメロンパン問題</a> / <a href="https://qiita.com/ae14watanabe/items/ef5689d40a0fbee957ea">Qiita 高次元正規分布は超球面状</a></p>
+
+<p class="muted">▼ この節の内容を使う章末演習です。 まず自分で手を動かしてから、 解答を開いてください。</p>
+<div class="exercise-card">
+<div class="ex-head">演習 1.20 ∗∗ — 高次元ガウスの半径方向密度 (§1.4)</div>
+<div class="ex-problem">
+<span class="plabel">問題</span>
+本演習ではガウス分布の高次元空間での挙動を調べる。 $D$ 次元のガウス分布
+$$p(\mathbf{x}) = \frac{1}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{\|\mathbf{x}\|^2}{2\sigma^2}\right) \quad (1.147)$$
+において、方向変数を積分消去した「半径についての密度」を求めたい。半径 $r$、厚さ $\varepsilon$ ($\varepsilon \ll 1$) の薄い球殻における確率の積分が $p(r)\,\varepsilon$ で与えられることを示せ。ただし
+$$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\sigma^2}\right) \quad (1.148)$$
+で、 $S_D = 2\pi^{D/2}/\Gamma(D/2)$ は $D$ 次元単位球の表面積。さらに、 $p(r)$ の停留点が大きな $D$ に対して $\hat r \approx \sigma\sqrt{D}$ にあることを示せ。最後に、$D$ が大きい極限で $p(\hat r + \varepsilon)$ を $\varepsilon$ の2次まで展開し、 $p(r)$ が $\hat r$ で鋭くピークを持つことを示せ。
+<p class="muted" style="margin-top:0.6em"><strong>⚠️ PRML印刷版エラッタ</strong>: PRML 本文の (1.149) は $p(\hat r + \varepsilon) = p(\hat r)\exp(-3\varepsilon^2/(2\sigma^2))$ と印刷されていますが、係数 $3/(2\sigma^2)$ は誤りで、正しくは $\exp(-\varepsilon^2/\sigma^2)$（つまり係数は $1/\sigma^2$）。本演習の正解は後者で、Taylor 2次展開を $\hat r^2 = (D-1)\sigma^2$ で計算すれば確認できます（下の解法スケッチ参照）。</p>
+</div>
+<div class="ex-solution">
+<span class="slabel">完全解答</span>
+<p><strong>方針</strong>: (a) 球殻の体積 × 密度で $p(r)$ を導出。 (b) $\ln p(r)$ を $r$ で微分し停留点 $\hat r$ を求める。 (c) $\hat r$ 周りで Taylor 2次展開して鋭いピークを示す。</p>
+
+<p><span class="step">Step 1.</span> 半径方向密度 $p(r)$ の導出 (式 1.148)。</p>
+<p>$p(\mathbf{x})$ は $\|\mathbf{x}\|$ にしか依存しない球対称分布。 半径 $r$、 厚さ $\varepsilon$ ($\varepsilon \ll 1$) の薄い球殻の<strong>体積</strong>は</p>
+<p>$$V_{\text{shell}} = S_D\, r^{D-1}\, \varepsilon \qquad (S_D = 2\pi^{D/2}/\Gamma(D/2)\ \text{は単位球の表面積})$$</p>
+<p>$\varepsilon$ が小さければ殻内で密度はほぼ一定 $= p(\|\mathbf{x}\| = r) = (2\pi\sigma^2)^{-D/2}\exp(-r^2/(2\sigma^2))$。 よって殻内の確率質量は:</p>
+<p>$$\int_{\text{shell}} p(\mathbf{x})\, d\mathbf{x} \;\approx\; V_{\text{shell}} \cdot p(\|\mathbf{x}\| = r) = \underbrace{\frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\sigma^2}\right)}_{= p(r),\ \text{式 1.148}} \cdot \varepsilon \quad \checkmark$$</p>
+
+<p><span class="step">Step 2.</span> 停留点 $\hat r$ を求める。</p>
+<p>対数を取って微分するのが楽: $f(r) := \ln p(r) = (D-1)\ln r - r^2/(2\sigma^2) + C$。 $r$ で微分:</p>
+<p>$$f'(r) = \frac{D-1}{r} - \frac{r}{\sigma^2}$$</p>
+<p>$f'(r) = 0$ を解く:</p>
+<p>$$\frac{D-1}{r} = \frac{r}{\sigma^2} \;\Longrightarrow\; r^2 = (D-1)\sigma^2 \;\Longrightarrow\; \boxed{\hat r = \sigma\sqrt{D-1} \approx \sigma\sqrt{D}\ \ (D\ \text{大})}$$</p>
+
+<p><span class="step">Step 3.</span> $\hat r$ が極大であることを2階微分で確認。</p>
+<p>$$f''(r) = -\frac{D-1}{r^2} - \frac{1}{\sigma^2}$$</p>
+<p>$\hat r$ で評価。 <strong>ここでは Step 2 で得た厳密値 $\hat r^2 = (D-1)\sigma^2$ をそのまま代入する</strong>のがコツ:</p>
+<p>$$f''(\hat r) = -\frac{D-1}{(D-1)\sigma^2} - \frac{1}{\sigma^2} = -\frac{1}{\sigma^2} - \frac{1}{\sigma^2} = -\frac{2}{\sigma^2}\ (<0)$$</p>
+<p>負なので $\hat r$ は局所最大。 ($\hat r \approx \sigma\sqrt{D}$ の近似値を代入すると $-(D-1)/(D\sigma^2) - 1/\sigma^2$ となり、 $D$ 大の極限で同じ $-2/\sigma^2$ に収束。 厳密値の方が代数が綺麗)。</p>
+
+<p><span class="step">Step 4.</span> $\hat r$ 周りで Taylor 2次展開。</p>
+<p>ピーク幅は次に示すように $\sigma$ オーダー（$D$ に依らない）なので、 $\varepsilon \ll \sigma$ の領域で考えれば 3次以上の項 $O(\varepsilon^3/\sigma^3)$ は無視できる。 $f'(\hat r) = 0$ より線形項なし、 2次まで:</p>
+<p>$$f(\hat r + \varepsilon) \approx f(\hat r) + \tfrac{1}{2} f''(\hat r)\varepsilon^2 = f(\hat r) - \frac{\varepsilon^2}{\sigma^2}$$</p>
+<p>$f = \ln p$ なので両辺を指数化:</p>
+<p>$$\boxed{p(\hat r + \varepsilon) \approx p(\hat r)\exp\!\left(-\frac{\varepsilon^2}{\sigma^2}\right)}$$</p>
+
+<p><span class="step">結論と解釈.</span> 高次元では確率質量が <strong>$\hat r \approx \sigma\sqrt{D}$ の薄い球殻に集中</strong>。 ピーク幅は $\sigma$ オーダーで $D$ によらず一定なので、 半径方向の相対幅 (= 幅/中心) は $1/\sqrt{D}$ で消えていく ⇒ 高次元では「中心」も「球殻外」も実質確率ゼロ。 これがガウスに効く次元の呪い。</p>
+
+<p class="muted">⚠️ PRML 印刷版 (1.149) は $\exp(-3\varepsilon^2/(2\sigma^2))$ と書かれていますが、 これは公式エラッタで、 正しい係数は $-1/\sigma^2$ です (上記 Step 3 の $f''$ 計算が根拠)。</p>
+</div>
+</div>
+
+<h2 id="sec8">8. §1.5 決定理論</h2>
+
+<h3 id="ss-8-1">8.1 推論と決定の分離</h3>
+<p><strong>推論 (inference)</strong> = データから $p(\mathcal{C}_k|x)$（や $p(t|x)$）を<strong>推定する</strong>段階。 <strong>決定 (decision)</strong> = その確率を踏まえて<strong>実際に何を出す／どう行動するかを選ぶ</strong>段階。 PRML はこの2つを<strong>分けて考えるべき</strong>と強調します。</p>
+
+<div class="callout gap">
+<span class="label">なぜ分けるのか — 医療診断のたとえ</span>
+<p>検査画像 $x$ から「ガンである確率」を推定したら $p(\text{ガン}|x) = 0.3$ だったとします。 これが<strong>推論</strong>。 では「ガンと診断する／しない」をどう決めるか？ それが<strong>決定</strong>で、 <strong>確率だけでは決まりません</strong>。 「ガンを見逃す損失」と「健康な人を誤って疑う損失」の<strong>大小（コスト）</strong>しだいです。</p>
+<p>カギは: <strong>同じ確率 0.3 でも、 状況によって最適な決定が変わる</strong>。 見逃しが命に関わるなら 0.3 でも「ガン」と判断するし、 過剰治療の害が大きいなら「経過観察」にする。 確率（推論）は<strong>データから決まる客観的な量</strong>、 決定は<strong>「損失」という別の入力</strong>を加えて初めて決まる。 だから2段階に分けるのが自然で、 しかも<strong>推論を先に済ませておけば、 損失が変わっても 決定だけ やり直せる</strong>（再学習不要）。 この利点は <a href="#ss-8-3">§8.3</a> の「事後確率を持つ4つの理由」に直結します。</p>
+</div>
+
+<h3 id="ss-8-2">8.2 分類: 5つの粒度</h3>
+<ul>
+  <li>§1.5.1 <strong>最小誤分類率</strong>: 最大事後確率 $\arg\max_k p(\mathcal{C}_k\mid x)$ を選ぶ。 誤分類確率は決定領域 $\mathcal{R}_1, \mathcal{R}_2$ 上の積分で表せる (式 1.78):
+    $$p(\text{mistake}) = \int_{\mathcal{R}_1} p(x, \mathcal{C}_2)\, dx + \int_{\mathcal{R}_2} p(x, \mathcal{C}_1)\, dx$$
+    境界 $x_0$ を「$p(x, \mathcal{C}_1) = p(x, \mathcal{C}_2)$」になる点に置くと、 誤分類が最小。
+    <span class="muted">（本がなくても分かるように言うと: 2つのクラスの分布は ふつう 少し重なっています。 誤分類の確率は その「重なった部分の面積」。 境界を 2本の曲線が交わる点に置くと、 取りこぼす面積が最小になる、 というのが PRML 図1.24 の主張です）</span></li>
+  <li>§1.5.2 <strong>最小期待損失</strong>: 損失行列 $L_{kj}$ (真のクラス $k$ を $j$ と判定する損失) を入れ、$\sum_k L_{kj} p(\mathcal{C}_k\mid x)$ を最小化 (式 1.80)。 例: ガン検診で「ガンを見落とす」損失を「健康者を疑う」損失より大きく設定</li>
+  <li>§1.5.3 <strong>棄却オプション</strong>: 事後確率の最大値が閾値 $\theta$ 未満なら判定しない (式 1.83)。 $\theta = 1$ で全棄却、 $K$ クラスでは $\theta < 1/K$ で棄却ゼロ (演習 1.24)</li>
+  <li>§1.5.4 <strong>生成 vs 識別 vs 判別関数</strong>: 後述（次節で4つの理由を詳述）</li>
+  <li>§1.5.5 <strong>回帰の損失</strong>: <a href="#ss-8-4">§8.4</a> で別立て</li>
+</ul>
+
+<div class="callout gap">
+<span class="label">式 1.78 の意味 — 「間違える確率」を絵で読む</span>
+<p>記号はいかついですが、 言っていることは単純です。 まず登場人物:</p>
+<ul>
+  <li><strong>$\mathcal{R}_1, \mathcal{R}_2$（決定領域）</strong>: 入力 $x$ の空間を「ここに来たら C1 と<strong>判定する</strong>領域 $\mathcal{R}_1$」「C2 と判定する領域 $\mathcal{R}_2$」に区切ったもの。 その境目が<strong>決定境界</strong>です。</li>
+  <li><strong>$p(x, \mathcal{C}_k)$（同時確率）</strong>: 「$x$ がこの値で、 <strong>かつ</strong> 本当のクラスが $\mathcal{C}_k$」である確率（密度）。</li>
+</ul>
+<p><strong>間違い (mistake) が起きるのは 2パターンだけ</strong>:</p>
+<ul>
+  <li>$x$ が $\mathcal{R}_1$ に来た（＝<strong>C1 と判定した</strong>）のに、 本当は <strong>C2</strong> だった。 この取りこぼしを全部足すと $\displaystyle\int_{\mathcal{R}_1} p(x, \mathcal{C}_2)\, dx$。</li>
+  <li>$x$ が $\mathcal{R}_2$ に来た（＝<strong>C2 と判定した</strong>）のに、 本当は <strong>C1</strong> だった → $\displaystyle\int_{\mathcal{R}_2} p(x, \mathcal{C}_1)\, dx$。</li>
+</ul>
+<p>この2つを足したのが式 1.78。 つまり <strong>「判定した先」と「本当のクラス」が食い違う確率の合計</strong>です。 記号 $\int_{\mathcal{R}_1}$ は「領域 $\mathcal{R}_1$ に入る $x$ を ぜんぶ足し上げる（積分する）」という意味。</p>
+<p><strong>図12（下）で見ると一目瞭然</strong>: 横軸 $x$ に 青 $p(x,\mathcal{C}_1)$ と 赤 $p(x,\mathcal{C}_2)$ の2曲線。 境界 $x_0$ の<strong>左</strong>（$\mathcal{R}_1$）にある<strong>赤の裾</strong>（本当はC2なのにC1判定）と、 <strong>右</strong>（$\mathcal{R}_2$）にある<strong>青の裾</strong>（本当はC1なのにC2判定）の<strong>合計面積（灰色）</strong>が p(mistake)。 境界を<strong>2曲線の交点</strong>に置くと、 各 $x$ で「背の高いほうのクラス」を選ぶことになり、 はみ出す面積（＝間違い）が最小になります。</p>
+<p class="muted">補足: $p(x,\mathcal{C}_k)$ は <a href="#ss-2-1">§2.1</a> の同時確率で、 $p(\mathcal{C}_k|x)\,p(x)$ とも書けます。 だから「同時確率が大きいほう」を選ぶのは「事後確率 $p(\mathcal{C}_k|x)$ が大きいほう」を選ぶのと同じ（$p(x)$ は両クラス共通なので）。 これが §1.5.1「最大事後確率を選べば誤分類最小」の中身です。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">具体例: 損失行列ひとつで「判定」がひっくり返る（ガン検診）</span>
+<p>2クラス（ガン / 健康）で、 ある患者の検査結果が $p(\text{ガン}|x) = 0.3$、 $p(\text{健康}|x) = 0.7$ だったとします。</p>
+<p><strong>素朴に最大事後確率だけ</strong>で決めると、 $0.7 > 0.3$ なので「健康」と判定。 …でも それでいい？ ガンの見逃しは 命に関わります。 そこで<strong>損失行列</strong> $L_{kj}$（真のクラス $k$ → 判定 $j$ にしたときの損失）を入れます:</p>
+<table>
+<thead><tr><th>真↓ \ 判定→</th><th>ガンと判定</th><th>健康と判定</th></tr></thead>
+<tbody>
+<tr><th scope="row">本当はガン</th><td>0（正解）</td><td><strong>100</strong>（見逃し=大損失）</td></tr>
+<tr><th scope="row">本当は健康</th><td>1（誤陽性=小損失）</td><td>0（正解）</td></tr>
+</tbody>
+</table>
+<p>各判定の<strong>期待損失</strong> $\sum_k L_{kj}\,p(\mathcal{C}_k|x)$ を計算します（その判定をしたとき、 真のクラスがどっちかで損失を平均）:</p>
+<ul>
+  <li>「ガンと判定」: $0 \times 0.3 + 1 \times 0.7 = \mathbf{0.7}$</li>
+  <li>「健康と判定」: $100 \times 0.3 + 0 \times 0.7 = \mathbf{30}$</li>
+</ul>
+<p>期待損失が小さいのは「ガンと判定」（$0.7 < 30$）。 <strong>確率は 0.3 しかないのに、 見逃しの損失が大きいので「ガン」と判断するのが正解</strong>になりました。 「最大事後確率なら健康、 期待損失最小ならガン」と、 <strong>同じ確率でも 損失行列しだいで判定が逆転</strong>する。 これが §1.5.1（最小誤分類）と §1.5.2（最小期待損失）の違いであり、 §8.1 で「推論と決定は別」と言った理由です。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">この 0.3 は「事後確率」— 事前・尤度・事後の対応（ベイズとの接続）</span>
+<p>上の $p(\text{ガン}|x) = 0.3$ は<strong>事後確率（posterior）そのもの</strong>です。 決定理論は「事後確率」を<strong>入力として受け取って</strong>、 損失と組み合わせて決定します。 では事前・尤度・事後は それぞれ何に当たるか:</p>
+<ul>
+  <li><strong>事前確率 $p(\text{ガン})$</strong>: 検査を受ける<strong>前</strong>の、 その人がガンである確率（＝有病率・base rate）。 「データを見る前の見込み」。</li>
+  <li><strong>尤度 $p(x \mid \text{ガン})$</strong>: <strong>ガンだとしたら</strong>、 その検査結果 $x$ が出る確率（＝検査の感度のような特性）。 「原因 → データ」の向き。</li>
+  <li><strong>事後確率 $p(\text{ガン} \mid x) = 0.3$</strong>: 検査結果 $x$ を<strong>見た後</strong>の、 ガンである確率。 ベイズ則 <strong>事後 ∝ 尤度 × 事前</strong>（<a href="#sec2">§2.1</a>）で 事前と尤度を合体して得た「更新後の確率」。</li>
+</ul>
+<p>つまり全体は<strong>2段構え</strong>です:</p>
+<p style="text-align:center"><strong>① 事前 × 尤度 →(ベイズ)→ 事後 $p(\text{ガン}\mid x)$</strong> 〔これが<strong>推論</strong>〕<br>
+<strong>② 事後 × 損失行列 →(期待損失 最小化)→ 判定</strong> 〔これが<strong>決定</strong>〕</p>
+<p>§8.2 は ① の結果（0.3）から<strong>始めて</strong> ② をやっています。 ①（事前×尤度→事後）の<strong>数値例そのもの</strong>は <a href="#sec2">§2.1</a> の検査の例にあります（あちらは 事前 1%・感度 95% → 事後 約9% という別の数値設定）。 <strong>損失行列は 事前・尤度・事後 とは別物</strong>で、 ②（決定）の段階で初めて入る「コストの表」だ、 という点に注意。</p>
+</div>
+
+<p class="muted"><strong>棄却オプションの具体例</strong>: 「$\max_k p(\mathcal{C}_k|x) < 0.9$ なら 自動判定せず 医師に回す」。 自信のある（事後確率が高い）ケースだけ機械が判定し、 際どいケースは人間に委ねる仕組み。 閾値 $\theta$ を上げるほど 棄却（保留）は増えますが、 自動判定した分の精度は上がります。</p>
+
+<figure class="figure" id="fig12">
+<img src="figs/fig12_decision_boundary.svg" alt="2クラスの分布の重なりと最適決定境界、誤分類領域">
+<figcaption><strong>図12.</strong> 最小誤分類の決定境界。 2クラスの分布（青・赤）は ふつう少し重なります。 誤分類の確率は その「重なりの面積」（灰色）で、 境界を 2曲線の交点に置くと この面積が最小に。 これが PRML 図1.24 の内容です。</figcaption>
+</figure>
+
+<h3 id="ss-8-3">8.3 §1.5.4 推論と決定 — 「なぜ事後確率を計算する価値があるか」(輪読頻出)</h3>
+
+<p>PRML は決定の3アプローチを示します:</p>
+<p class="muted"><strong>向きの読み方</strong>: 最後に欲しいのは「この入力 $x$ はどのクラス？」 $= p(\mathcal{C}_k \mid x)$（左がクラス＝知りたいこと）。 (b) はそれを<strong>直接</strong>狙う向き。 (a) はあえて逆向きの $p(x \mid \mathcal{C}_k)$（「クラス $k$ のデータはどんな見た目か」）をモデル化し、 <strong>Bayes 則で $p(\mathcal{C}_k \mid x)$ に反転</strong>させます（→ <a href="#ss-2-1">§2.1</a> 早見表）。 なぜ遠回りするのか＝逆向きの方がモデル化しやすい場合や、 副産物の $p(x)$（データ全体の分布）が外れ値検出に使えるから。</p>
+<table>
+<thead><tr><th>アプローチ</th><th>何をモデル化</th><th>長短</th></tr></thead>
+<tbody>
+<tr><td>(a) 生成モデル</td><td>$p(x \mid \mathcal{C}_k)$ と $p(\mathcal{C}_k)$ → ベイズで $p(\mathcal{C}_k|x)$</td><td>柔軟・$p(x)$ も手に入る（外れ値検出に使える）・データ多く要</td></tr>
+<tr><td>(b) 識別モデル</td><td>$p(\mathcal{C}_k \mid x)$ を直接</td><td>中庸、 logistic 回帰など</td></tr>
+<tr><td>(c) 判別関数</td><td>$x$ → クラス番号への決定的写像</td><td>軽いが確率出ない、後処理が効かない</td></tr>
+</tbody>
+</table>
+
+<div class="callout key">
+<span class="label">事後確率を持つべき4つの理由（PRML p.44-46、 輪読で必ず問われる）</span>
+<ol>
+  <li><strong>リスクの事後修正</strong>: 損失行列 $L_{kj}$ を運用後に変更したくなったとき、 $p(\mathcal{C}_k|x)$ さえあれば $\arg\min_j \sum_k L_{kj} p(\mathcal{C}_k|x)$ で即対応可。 判別関数しか持たないと再学習が要る</li>
+  <li><strong>棄却オプション</strong>: 「$\max_k p(\mathcal{C}_k|x) < \theta$ なら棄却」が事後確率なしには定義できない</li>
+  <li><strong>クラス事前確率の補正 (rebalancing)</strong>: 訓練データのクラス比 (例: ガン1/1000) と運用環境の比 (例: 50/50 のスクリーニング集団) が異なる場合、 ベイズ則から $p_{\text{new}}(\mathcal{C}_k|x) \propto p_{\text{train}}(\mathcal{C}_k|x) \cdot \dfrac{p_{\text{new}}(\mathcal{C}_k)}{p_{\text{train}}(\mathcal{C}_k)}$ で簡単に補正できる。 判別関数では不可能</li>
+  <li><strong>モデル結合</strong>: 複数モデル/複数特徴の事後を統合できる。 例えば素朴ベイズで $p(\mathcal{C}_k | x_A, x_B) \propto p(x_A | \mathcal{C}_k) p(x_B | \mathcal{C}_k) p(\mathcal{C}_k)$ (式 1.84, 1.85)</li>
+</ol>
+</div>
+
+<h3 id="ss-8-4">8.4 回帰の Lq損失（演習 1.27 の本丸）</h3>
+<p>$$E[L_q] = \int\!\!\int |y(x) - t|^q\, p(x, t)\, dx\, dt$$</p>
+
+<div class="callout gap">
+<span class="label">準備: 汎関数微分とは</span>
+<p>普通の微分は変数 $w$ に関して。汎関数微分は<strong>関数 $y(\cdot)$ そのもの</strong>に関して微分する操作。直感的には「$y$ を $y(x_0)$ だけ動かしたときの $E[L_q]$ の変化率」。$E[L_q] = \int F[y(x)]\, dx$ の形なら結果は</p>
+<p>$$\frac{\delta E[L_q]}{\delta y(x_0)} = \left. \frac{\partial F}{\partial y} \right|_{x=x_0}$$</p>
+<p>つまり各 $x$ ごとに普通の微分をすればよい (詳細は付録 D)。</p>
+</div>
+
+<p>$y(x)$ を汎関数微分してゼロ。 厳密には $\delta E[L_q]/\delta y(x_0) = p(x_0) \cdot \int q|y(x_0)-t|^{q-1}\mathrm{sign}(y(x_0)-t)\, p(t|x_0)\, dt$ となるが、 $p(x_0) > 0$ の領域では両辺を $p(x_0)$ で割れて<strong>各 $x$ ごとに独立に最適化</strong>できる:</p>
+<p>$$\int q\, |y(x) - t|^{q-1}\, \mathrm{sign}(y(x) - t)\, p(t\mid x)\, dt = 0$$</p>
+<table>
+<thead><tr><th>$q$</th><th>最適 $y(x)$</th><th>性質</th></tr></thead>
+<tbody>
+<tr><td>2</td><td>条件付き平均 $E[t\mid x]$</td><td>$\int (y-t)\,p(t|x)\,dt=0 \Rightarrow y = E[t|x]$。滑らか、外れ値に弱い</td></tr>
+<tr><td>1</td><td>条件付き中央値 (median)</td><td>$\int \mathrm{sign}(y-t)\,p(t|x)\,dt = 0$ より $y$ の左右で確率質量が等しい</td></tr>
+<tr><td>$\to 0$</td><td>条件付き最頻値 (mode)</td><td>$|y-t|^q$ は $t=y$ 近傍以外でほぼ 1、$t=y$ で 0 → 「ノッチ」を $p(t|x)$ が最大のところに置くと損失積分が最小化される</td></tr>
+</tbody>
+</table>
+
+<div class="callout gap">
+<span class="label">具体例: なぜ q=1（中央値）は外れ値に強いのか</span>
+<p>ある会社の社員5人の年収が 400, 420, 450, 480, 500（万円）。 「代表値」を1つ出すと:</p>
+<ul>
+  <li>$q=2$（平均）: $(400+420+450+480+500)/5 = 450$ 万円</li>
+  <li>$q=1$（中央値）: 並べて まん中の 450 万円</li>
+</ul>
+<p>ほぼ同じですね。 ところが ここに 年収 1億円（=10000万円）の社長が1人 加わると:</p>
+<ul>
+  <li>$q=2$（平均）: $(400+420+450+480+10000)/5 = 2350$ 万円 → <strong>「平均年収2350万円の会社」</strong>。 たった1人の外れ値に 引っぱられ、 実態とかけ離れる。</li>
+  <li>$q=1$（中央値）: 並べた まん中は やはり 450 万円 → <strong>外れ値があっても びくともしない</strong>。</li>
+</ul>
+<p>これが「二乗損失($q=2$)は外れ値に弱く、 絶対損失($q=1$)は頑健」の正体です。 二乗は ズレを 2乗するので、 遠い1点が 効きすぎる。 最適な $y(x)$ が「平均か、 中央値か、 最頻値か」は 損失の形 $q$ しだいで変わる、 というのが 演習1.27 のメッセージです。</p>
+</div>
+
+<figure class="figure" id="fig13">
+<img src="figs/fig4_lq_loss.svg" alt="Lq損失の形状 q=0.3, 1, 2, 4">
+<figcaption><strong>図13.</strong> Lq損失 $|y(x) - t|^q$ の形状。q=2 では誤差を二乗 (平均二乗誤差)、 q=1 では絶対誤差で外れ値耐性、 q→0 ではほぼ階段関数で最頻値が最適、 q が大きいと外れ値に過敏に。</figcaption>
+</figure>
+
+<div class="callout key">
+<span class="label">$q=2$ の場合の重要結果: 二乗損失の2項分解（<a href="#eq-1-90">式 1.90</a>、 バイアス・バリアンス分解の伏線）</span>
+<p>期待二乗損失 $E[L] = \iint \{y(x)-t\}^2 p(x,t)\,dx\,dt$ は次の2項に分かれます。 <strong>「途中（交差項が消える所）」を飛ばさず埋めます</strong>:</p>
+<p><strong>ステップ1: $E[t|x]$ を 足して引く</strong>（add-and-subtract、 値は変えない）:</p>
+<p>$$y(x)-t = \{y(x)-E[t|x]\} + \{E[t|x]-t\}$$</p>
+<p><strong>ステップ2: 2乗して展開</strong>（$(a+b)^2 = a^2 + 2ab + b^2$）:</p>
+<p>$$\{y(x)-t\}^2 = \{y(x)-E[t|x]\}^2 + 2\{y(x)-E[t|x]\}\{E[t|x]-t\} + \{E[t|x]-t\}^2$$</p>
+<p><strong>ステップ3: $t$ について（$x$ を固定して）期待値を取ると 交差項が消える</strong>。 $\{y(x)-E[t|x]\}$ は $t$ に依らないので外へ出せて:</p>
+<p>$$\int 2\{y(x)-E[t|x]\}\{E[t|x]-t\}\,p(t|x)\,dt = 2\{y(x)-E[t|x]\}\underbrace{\int \{E[t|x]-t\}\,p(t|x)\,dt}_{=\;E[t|x]-E[t|x]\;=\;0} = 0$$</p>
+<p>（中の積分は「平均 $E[t|x]$ からのズレの平均」なので ちょうど 0。） 残った第1項・第3項を $x$ でも平均すると、 第3項は $\int\{E[t|x]-t\}^2 p(t|x)dt = \mathrm{var}[t|x]$ なので:</p>
+<p id="eq-1-90">$$E[L] = \underbrace{\int \{y(x) - E[t|x]\}^2\, p(x)\, dx}_{\text{第1項}} \;+\; \underbrace{\int \mathrm{var}[t|x]\, p(x)\, dx}_{\text{第3項}} \qquad \text{(式 1.90)}$$</p>
+<ul>
+  <li>第1項: モデル予測 $y(x)$ と「最適予測 $E[t|x]$」のズレ。 学習によって減らせる<strong>削減可能な誤差</strong></li>
+  <li>第2項: $t$ の条件付き分散の平均。 これは「学習で削れないノイズ床 (irreducible noise)」、 つまりデータ自体の本質的不確実性</li>
+</ul>
+<p>これは <strong>§3.2 のバイアス・バリアンス分解 (式 3.41) の伏線</strong>。 第1項をさらに「(バイアス)² + バリアンス」に分解できる、というのが第3章の議論です。</p>
+</div>
+
+<p>回帰でも分類と並列で<strong>3アプローチ</strong> (PRML §1.5.5 周辺):</p>
+<ul>
+  <li>(a) $p(x, t)$ をモデル化 → $p(t|x)$ を計算 → 損失最小化で $y(x) = E[t|x]$</li>
+  <li>(b) $p(t|x)$ を直接モデル化 → 同様</li>
+  <li>(c) $y(x)$ を直接学習（普通の回帰モデル）</li>
+</ul>
+
+<p class="muted">参考: <a href="http://directorscut82.github.io/osaka_prml_reading/ex_01_21-30.html">大阪PRML読書会 第1章 1.21-1.30 演習</a></p>
+
+<p class="muted">▼ この節の内容を使う章末演習です。 まず自分で手を動かしてから、 解答を開いてください。</p>
+<div class="exercise-card">
+<div class="ex-head">演習 1.27 ∗∗ — Lq損失 (§1.5.5)</div>
+<div class="ex-problem">
+<span class="plabel">問題</span>
+$L_q$ 損失関数 (1.91) の下での回帰問題の期待損失
+$$E[L_q] = \int\!\!\int |y(x) - t|^q\, p(x,t)\, dx\, dt$$
+を考える。 $E[L_q]$ を最小化するために $y(x)$ が満たすべき条件を書き下せ。 $q = 1$ のとき、その解が<strong>条件付き中央値</strong>、すなわち $t < y(x)$ となる確率質量と $t \ge y(x)$ となるそれが等しい関数 $y(x)$ であることを示せ。さらに $q \to 0$ の極限で最小期待 $L_q$ 損失を与えるのが<strong>条件付き最頻値</strong>、すなわち各 $x$ について $p(t|x)$ を最大にする $t$ の値に等しい関数 $y(x)$ であることを示せ。
+</div>
+<div class="ex-solution">
+<span class="slabel">完全解答</span>
+<p><strong>方針</strong>: 汎関数微分で「各 $x$ ごとに独立に最適化」できることを示し、 $q=2, 1, \to 0$ の各場合に最適 $y(x)$ を求める。</p>
+
+<p><span class="step">Step 1.</span> $E[L_q]$ を $y$ で汎関数微分。</p>
+<p>$$E[L_q] = \int\!\!\int |y(x) - t|^q\, p(t|x)\, p(x)\, dt\, dx$$</p>
+<p>$y(x)$ を関数として動かしたときの $E[L_q]$ の変化率 ($y(x_0)$ を $\delta y(x_0)$ だけ動かす):</p>
+<p>$$\frac{\delta E[L_q]}{\delta y(x_0)} = p(x_0) \cdot \int q\, |y(x_0) - t|^{q-1}\, \mathrm{sign}(y(x_0) - t)\, p(t|x_0)\, dt$$</p>
+<p>$p(x_0) > 0$ の領域では割って消せる ⇒ <strong>各 $x$ ごとに独立に</strong>次の停留条件を解けばよい:</p>
+<p>$$\int q\, |y(x) - t|^{q-1}\, \mathrm{sign}(y(x) - t)\, p(t|x)\, dt = 0$$</p>
+<p class="muted">注: この停留条件には PRML 本文中で式番号は振られていない (問題文 "Write down the condition" の答えそのもの)。</p>
+
+<p><span class="step">Step 2. ケース $q=2$ (検算: 条件付き平均)</span></p>
+<p>$|y-t|^{2-1} \mathrm{sign}(y-t) = (y-t)$ なので積分は分解:</p>
+<p>$$\int (y - t)\, p(t|x)\, dt = y \cdot \underbrace{\int p(t|x)\, dt}_{=1} - \underbrace{\int t\, p(t|x)\, dt}_{= E[t|x]} = y - E[t|x] = 0$$</p>
+<p>$\therefore y(x) = E[t|x]$。 これは<strong>回帰関数</strong> (式 1.89) であり、二乗誤差最小化の標準的解。</p>
+
+<p><span class="step">Step 3. ケース $q=1$ (条件付き中央値)</span></p>
+<p>$|y-t|^0 \cdot \mathrm{sign}(y-t) = \mathrm{sign}(y-t)$ なので:</p>
+<p>$$\int \mathrm{sign}(y-t)\, p(t|x)\, dt = \int_{-\infty}^{y} (+1)\, p(t|x)\, dt + \int_{y}^{\infty} (-1)\, p(t|x)\, dt$$</p>
+<p>$$= P(t < y \mid x) - P(t \ge y \mid x) = 0$$</p>
+<p>つまり $P(t < y|x) = P(t \ge y|x) = 1/2$。 これは<strong>条件付き中央値 (conditional median)</strong> の定義。 外れ値に強い損失関数。</p>
+
+<p><span class="step">Step 4. ケース $q \to 0$ (条件付き最頻値)</span></p>
+<p>関数 $g(t) = |y - t|^q$ の $q \to 0^+$ での挙動:</p>
+<ul>
+  <li>$t = y$ では $g(y) = 0^q = 0$</li>
+  <li>$t \ne y$ では $g(t) = (\text{有限の正数})^q \to 1$</li>
+</ul>
+<p>よって $g(t)$ は $t = y$ 近傍にだけ「下向きのノッチ (穴)」を持つ階段関数に近づく。 損失積分:</p>
+<p>$$E[L_q \mid x] = \int |y-t|^q p(t|x)\, dt \;\to\; \int_{t\ne y} 1 \cdot p(t|x)\, dt - (\text{ノッチで削れる量})$$</p>
+<p>全体の積分値は「1 から〈ノッチで削れる分〉を引いた値」。 削れる分は<strong>ノッチを置いた位置 $y$ における密度 $p(t|x)$ に比例</strong>します（密度が高い場所ほど、そこを 0 に削れば積分が大きく減るから）。 したがって損失を最小化するには、 ノッチを<strong>密度 $p(t|x)$ が最大の場所</strong>に置けばよい:</p>
+<p>$$\therefore y(x) = \arg\max_t p(t|x) = \text{条件付き最頻値 (mode)}\ \checkmark$$</p>
+
+<p><span class="step">まとめ</span></p>
+<table>
+<thead><tr><th>$q$</th><th>最適 $y(x)$</th><th>用途・性質</th></tr></thead>
+<tbody>
+<tr><td>2</td><td>条件付き平均 $E[t|x]$</td><td>標準的、滑らかだが外れ値に弱い</td></tr>
+<tr><td>1</td><td>条件付き中央値</td><td>外れ値に頑健</td></tr>
+<tr><td>$\to 0$</td><td>条件付き最頻値</td><td>多峰分布でモードを返す</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<h2 id="sec9">9. §1.6 情報理論</h2>
+
+<h3 id="ss-9-1">9.1 エントロピー: 「驚き」の期待値</h3>
+<p>イベント $x$ の「驚き」を $h(x) = -\log p(x)$ で定義 (確率小ほど驚き大、$p=1$ なら驚き 0、$p \to 0$ なら無限大)。 分布 $p$ の平均的驚きが <strong>エントロピー</strong>:</p>
+<p>$$H[x] = -\sum_x p(x) \log p(x) \quad \text{(離散)}, \qquad H[x] = -\int p(x) \ln p(x)\, dx \quad \text{(連続, 式 1.103)}$$</p>
+<p>底を 2 にすればビット (情報理論で標準)、 $e$ にすればナット。本書は ln (ナット)。</p>
+
+<div class="callout key">
+<span class="label">Shannon の無雑音符号化定理</span>
+<p>エントロピー $H[x]$ は単なる「驚き」の平均ではなく、 <strong>確率変数 $x$ の値を伝送するのに必要な平均符号長の理論的下限</strong> でもあります (Shannon, 1948)。 つまり「$N$ 回独立に $x$ を観測した結果をどんなに賢く圧縮しても、 平均で $N \cdot H[x]$ ナット (or ビット) より短くはできない」。 <a href="#ss-9-3">§9.3</a> の KL の符号化解釈も、 この定理から自然に出てきます。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">なぜ「対数」なのか — 加法性の公理（演習 1.28 の中身）</span>
+<p>「驚き $h(p)$ は次を満たすべき」と公理化します:</p>
+<ul>
+  <li><strong>独立事象では情報量は加算</strong>: $x, y$ が独立 ($p(x,y)=p(x)p(y)$) なら $h(x,y) = h(x) + h(y)$</li>
+  <li><strong>確率の単調減少</strong>: 確率が小さいほど驚きが大きい</li>
+</ul>
+<p>第1条件を $h$ の関数形に翻訳: $h(p_x \cdot p_y) = h(p_x) + h(p_y)$。 これは関数方程式 $h(ab) = h(a) + h(b)$ で、解は $h(p) \propto \log p$ に限られます（演習 1.28 が誘導付きで導く）。 第2条件から係数は負、 ⇒ $h(p) = -\log p$ が必然的に出る。</p>
+<p>歴史的には Boltzmann のエントロピー $S = k \ln W$（$W$ は微視状態数）から、 スターリングの近似 $\ln N! \approx N\ln N - N$ を経て $H = -\sum p_i \ln p_i$ が現れます（PRML §1.6 冒頭）。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">注意: 連続版は「微分エントロピー」、 負にもなる</span>
+<p>離散から連続への移行 (式 1.101-1.103) では、 ビン幅 $\Delta$ を 0 にする極限で $-\ln \Delta$ が発散します。 これを切り捨てたのが連続版エントロピーで、 <strong>微分エントロピー (differential entropy)</strong> と呼ばれます。 離散と連続では「単位」が違うので、 連続版は<strong>負になり得ます</strong>。 例: ガウス (1.110) は $\sigma^2 < 1/(2\pi e)$ で $H < 0$。 これは「鋭く尖った分布は驚きが小さい」ことの帰結。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">具体例: 公平なコイン vs 偏ったコイン</span>
+<p><strong>公平なコイン</strong> ($p=1/2$):</p>
+<p>$$H = -\tfrac{1}{2} \ln \tfrac{1}{2} - \tfrac{1}{2} \ln \tfrac{1}{2} = \ln 2 \approx 0.693 \text{ ナット}$$</p>
+<p><strong>偏ったコイン</strong> ($p=0.9$):</p>
+<p>$$H = -0.9 \ln 0.9 - 0.1 \ln 0.1 \approx 0.095 + 0.230 = 0.325 \text{ ナット}$$</p>
+<p>偏ったコインの方は「ほぼ表」と予測できるので<strong>驚きの期待値が小さい</strong>。公平なコインは予測しづらいのでエントロピー最大。 <a href="#fig14">図14</a> のグラフがこの関係をなめらかに描いています。</p>
+</div>
+
+<figure class="figure" id="fig14">
+<img src="figs/fig5_binary_entropy.svg" alt="バイナリエントロピー H(p) = -p log p - (1-p) log(1-p)">
+<figcaption><strong>図14.</strong> バイナリエントロピー。 $p=0$ または $p=1$ なら結果は完全に予測でき $H=0$。 $p=1/2$ で最大値 $\ln 2$。</figcaption>
+</figure>
+
+<h3 id="ss-9-2">9.2 ガウスのエントロピー（演習 1.35）</h3>
+<p>1次元ガウス $\mathcal{N}(\mu, \sigma^2)$ では $\ln p(x) = -\tfrac{1}{2}\ln(2\pi\sigma^2) - (x-\mu)^2/(2\sigma^2)$、よって:</p>
+<p>
+$$H[x] = -E[\ln p(x)] = \tfrac{1}{2}\ln(2\pi\sigma^2) + \frac{1}{2\sigma^2}\, E[(x-\mu)^2] = \tfrac{1}{2}\ln(2\pi\sigma^2) + \tfrac{1}{2} = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\}$$
+</p>
+<p class="muted">補足: ガウスは「平均と分散を固定した中でエントロピー最大化問題の解」（§1.6 内, 演習 1.34）。 ラグランジュ未定乗数法で「正規化」「平均」「分散」の3制約を入れて $\delta H/\delta p = 0$ を解くとガウスの形 (式 1.108-1.109) が出ます。 だから<strong>ガウス＝平均・分散を与えたときの最も無情報な分布</strong>と言えます。</p>
+
+<p class="muted">▼ この節の内容を使う章末演習です。 まず自分で手を動かしてから、 解答を開いてください。</p>
+<div class="exercise-card">
+<div class="ex-head">演習 1.35 ∗ — ガウスのエントロピー (§1.6)</div>
+<div class="ex-problem">
+<span class="plabel">問題</span>
+結果 (1.106) $\int x\, p(x)\, dx = \mu$ と (1.107) $\int (x-\mu)^2\, p(x)\, dx = \sigma^2$ を用いて、 1変数ガウス分布 (1.109) のエントロピーが
+$$H[x] = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\} \quad (1.110)$$
+で与えられることを示せ。
+<p class="muted" style="margin-top:0.6em">注: 暗黙に正規化条件 (1.105) $\int p(x)\,dx = 1$ も使います。 PRML が「(1.106) と (1.107) を用いて」と書くのは (x-μ)² を展開して E[x²], E[x], E[1] に分けるルートを想定したものですが、 (1.105) と (1.107) を使う方が短く、 下の解答もそちらのルートで進めます。</p>
+</div>
+<div class="ex-solution">
+<span class="slabel">完全解答</span>
+<p><strong>方針</strong>: エントロピーの定義 $H[x] = -\int p(x)\ln p(x)\, dx$ に1変数ガウスの密度を代入し、 (1.105) と (1.107) を使って積分を実行する。</p>
+
+<p><span class="step">Step 1.</span> ガウス密度の対数を計算。</p>
+<p>$$p(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$</p>
+<p>両辺の対数を取り、 $\exp$ の中身が引っ張り出される:</p>
+<p>$$\ln p(x) = -\frac{1}{2}\ln(2\pi\sigma^2) - \frac{(x-\mu)^2}{2\sigma^2}$$</p>
+
+<p><span class="step">Step 2.</span> エントロピーの定義に代入。</p>
+<p>$$H[x] = -\int p(x)\ln p(x)\, dx = -\int p(x)\left[-\frac{1}{2}\ln(2\pi\sigma^2) - \frac{(x-\mu)^2}{2\sigma^2}\right] dx$$</p>
+<p>マイナスを分配し、 2つの積分に分解:</p>
+<p>$$H[x] = \frac{1}{2}\ln(2\pi\sigma^2) \underbrace{\int p(x)\, dx}_{(\text{第1項})} + \frac{1}{2\sigma^2} \underbrace{\int (x-\mu)^2\, p(x)\, dx}_{(\text{第2項})}$$</p>
+
+<p><span class="step">Step 3.</span> 与えられた結果を代入。</p>
+<ul>
+  <li>第1項: $\int p(x)\, dx = 1$ (式 1.105、 確率密度の正規化)</li>
+  <li>第2項: $\int (x-\mu)^2\, p(x)\, dx = \sigma^2$ (式 1.107、 分散の定義)</li>
+</ul>
+<p>代入すると:</p>
+<p>$$H[x] = \frac{1}{2}\ln(2\pi\sigma^2) \cdot 1 + \frac{1}{2\sigma^2} \cdot \sigma^2 = \frac{1}{2}\ln(2\pi\sigma^2) + \frac{1}{2}$$</p>
+
+<p><span class="step">結論.</span></p>
+<p id="eq-1-110">$$\boxed{H[x] = \frac{1}{2}\!\left\{1 + \ln(2\pi\sigma^2)\right\} \qquad (1.110)\ \checkmark}$$</p>
+
+<p><strong>解釈</strong>:</p>
+<ul>
+  <li>$\sigma^2$ が大きい (分布が広がる) ほど $H$ も大きい — 「予測しにくい = 驚きの期待値が大」と整合</li>
+  <li>$\mu$ には依存しない — ガウスの「形」は平行移動で変わらないから自然</li>
+  <li>$\sigma^2 < 1/(2\pi e)$ では $H < 0$ — <strong>微分エントロピーは負になり得る</strong> (<a href="#ss-9-1">§9.1</a> の注意点)。 これは離散と連続でエントロピーの「単位」が違うため</li>
+</ul>
+
+<p class="muted">PRML はこの後 (演習 1.34) で「平均と分散を固定した条件下で $H$ を最大化する分布はガウス」を示します（Lagrange 未定乗数法）。 つまり <strong>ガウス = 平均と分散だけが既知のときの最も無情報な分布</strong>。</p>
+</div>
+</div>
+
+<h3 id="ss-9-3">9.3 KLダイバージェンス（式 1.113）</h3>
+<p>2つの分布 $p, q$ の「隔たり」:</p>
+<p>$$\mathrm{KL}(p\,\|\,q) = \int p(x) \ln\frac{p(x)}{q(x)}\, dx = -\int p(x) \ln\frac{q(x)}{p(x)}\, dx$$</p>
+<p>非対称（$p$ と $q$ を入れ替えると値が変わる）。<strong>距離ではない</strong>。</p>
+<p class="muted"><strong>符号化的解釈</strong>: $\mathrm{KL}(p\|q)$ は「真の分布が $p$ なのに $q$ で符号化したときに余分に必要な平均符号長 (ナット数)」。 $p$ で最適符号化すれば平均長 $H[p]$ ナットで済むところ、 $q$ で符号化すると $H[p] + \mathrm{KL}(p\|q)$ ナット必要。 ⇒ KL は「分布間の隔たり = 余分な符号長」。</p>
+
+<div class="callout gap">
+<span class="label">具体例: 「公平なコイン」を「9割表のコイン」と思い込むと</span>
+<p>真の分布が 公平なコイン $p = (\text{表}\,0.5,\ \text{裏}\,0.5)$ なのに、 あなたが「このコインは9割 表だ」と誤解して $q = (0.9,\ 0.1)$ を使ったとします。 KL は その「思い込みのズレ」を 数値で測ります:</p>
+<p>$$\mathrm{KL}(p\,\|\,q) = 0.5\ln\frac{0.5}{0.9} + 0.5\ln\frac{0.5}{0.1} \approx 0.51 \text{ ナット}$$</p>
+<p>0 より大きい（＝ズレている証拠）。 もし $q$ も公平 $(0.5, 0.5)$ なら ぴったり 0（ズレなし）。 符号化で言えば「本当は半々なのに 9割表用の符号を使ったせいで、 1回あたり 平均 0.51 ナット ぶん 損する」。</p>
+<p><strong>非対称の確認</strong>: 逆向きは $\mathrm{KL}(q\,\|\,p) = 0.9\ln\frac{0.9}{0.5} + 0.1\ln\frac{0.1}{0.5} \approx 0.37$ ナット。 $0.51 \ne 0.37$ で、 $p$ と $q$ を入れ替えると値が変わります。 だから KL は「距離」ではない（距離なら 行きと帰りは同じはず）。</p>
+</div>
+
+<div class="callout key">
+<span class="label">非対称性をどう使い分けるか — forward KL vs reverse KL</span>
+<p>$\mathrm{KL}(p\|q)$ と $\mathrm{KL}(q\|p)$ は値が異なるだけでなく、 <strong>近似の性質も異なります</strong>:</p>
+<ul>
+  <li><strong>Forward KL</strong> $\mathrm{KL}(p\|q)$ ($p$ が真、 $q$ で近似): $p(x)$ が大きい所で $q(x)$ も大きい必要がある (そうでないと $p \ln(p/q)$ が発散)。 ⇒ $q$ は $p$ の<strong>すべての山を覆う</strong> ("mode-covering")。 これは MLE が最小化する KL (<a href="#ss-9-3">§9.3</a> の式 1.119「KLと最尤推定の橋渡し」でデータの経験分布が $p$、 モデルが $q$)。</li>
+  <li><strong>Reverse KL</strong> $\mathrm{KL}(q\|p)$ ($q$ で $p$ を近似): $q(x)$ が大きい所で $p(x)$ も大きい必要がある。 ⇒ $q$ は $p$ の<strong>一つの山に集中する</strong> ("mode-seeking")。 これは<strong>変分推論 (PRML 第10章で扱う)</strong> や VAE などが用いる KL。</li>
+</ul>
+<p>同じ真の分布 $p$ でも、 forward / reverse のどちらを使うかで得られる近似が大きく違うのが KL の非対称性の本質的なご利益。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">行間: $\mathrm{KL}(p\|q) \ge 0$ の証明（Jensen の不等式）</span>
+<p class="muted">準備: 関数 $f$ が<strong>凸</strong>とは、任意の2点を結ぶ弦が関数のグラフより<strong>上</strong>にある状態 ($-\ln$ や $x^2$)。<strong>凹</strong>はその逆 ($\ln$ や $\sqrt{x}$)。Jensen の不等式: 凸関数 $f$ に対し $E[f(X)] \ge f(E[X])$（凹ならば不等号反転）。</p>
+<p class="muted"><strong>2点で数値確認</strong>: $X$ が 1/2 の確率で 1、1/2 の確率で 3 を取るとする。$E[X] = 2$。 $f(x) = x^2$ (凸) なら $f(E[X]) = 4$、 $E[f(X)] = (1+9)/2 = 5$。確かに $5 \ge 4$、等号でない。等号は $X$ が一点に集中するときだけ。</p>
+<p>本題に戻って $f = -\ln, X = q(x)/p(x)$、 期待値は $p$ のもとで:</p>
+<p>$$E_p[-\ln(q/p)] \ge -\ln E_p[q/p] = -\ln \int p \cdot \frac{q}{p}\, dx = -\ln \int q\, dx = -\ln 1 = 0$$</p>
+<p>左辺がまさに $\mathrm{KL}(p\|q)$。 ∴ $\mathrm{KL}(p\|q) \ge 0$。</p>
+<p><strong>等号条件</strong>: $-\ln$ は<strong>狭義</strong>凸 (strictly convex) なので、 Jensen の等号 ⟺ $q/p$ が $p$-a.s. に定数 $c$。 さらに $\int q\, dx = \int p \cdot (q/p)\, dx = c \cdot 1 = c$、 一方 $\int q\, dx = 1$ なので $c = 1$。 ∴ $p = q$ ($p$-a.s.)。</p>
+</div>
+
+<h4>KLと最尤推定の橋渡し（式 1.119）</h4>
+<p>真の分布 $p(x)$ から得たデータ $\{x_n\}_{n=1}^{N}$ に対し、 経験分布で期待値を近似:</p>
+<p>$$\mathrm{KL}(p\,\|\,q(\cdot|\theta)) \;\simeq\; \frac{1}{N}\sum_{n=1}^{N}\left[-\ln q(x_n|\theta) + \ln p(x_n)\right]$$</p>
+<p class="muted">注: PRML 印刷版 (1.119) は $\tfrac{1}{N}$ なしで書かれていますが、これは「期待値をサンプル平均で近似する」(式 1.35) の規約をそのまま使っているため。 本まとめでは $1/N$ を明示する形に書いています。 $\theta$ の最大化点は両形式で同じ。</p>
+<p>右辺の第2項 $\ln p(x_n)$ は $\theta$ に依らない。 第1項は<strong>負の対数尤度</strong>そのもの。 よって:</p>
+<p>$$\arg\min_\theta \mathrm{KL}(p\,\|\,q(\cdot|\theta)) \;=\; \arg\max_\theta \sum_n \ln q(x_n|\theta) \;=\; \theta_{\mathrm{ML}}$$</p>
+<p><strong>最尤推定とは「経験分布と $q(\cdot|\theta)$ の KL を最小化すること」</strong>。 推定論と情報理論の最も美しい橋渡し。 後の章では変分推論やGAN などでこの等価性が繰り返し使われます。</p>
+
+<h3 id="ss-9-4">9.4 条件付きエントロピーと相互情報量（<a href="#eq-1-111">式 1.111</a>, 1.112, 1.120, 1.121）</h3>
+
+<p>まず<strong>条件付きエントロピー</strong> (<a href="#eq-1-111">式 1.111</a>):</p>
+<p id="eq-1-111">$$H[y|x] = -\iint p(y, x)\ln p(y|x)\, dy\, dx$$</p>
+<p>「$x$ が分かったときに残る $y$ の不確実性」。 product rule $p(y,x) = p(y|x)p(x)$ を使うと、 $H$ について<strong>連鎖律 (<a href="#eq-1-112">式 1.112</a>)</strong> が出ます:</p>
+<p id="eq-1-112">$$H[x, y] = H[y|x] + H[x] \qquad \text{(式 1.112、 演習 1.37)}$$</p>
+
+<p>これらを使って<strong>相互情報量</strong> (<a href="#eq-1-120">式 1.120</a>):</p>
+<p id="eq-1-120">$$I[x, y] = \mathrm{KL}(p(x,y)\,\|\,p(x)p(y))$$</p>
+<p>条件付きエントロピーで書き直すと (<a href="#eq-1-121">式 1.121</a>):</p>
+<p id="eq-1-121">$$I[x,y] = H[x] - H[x|y] = H[y] - H[y|x]$$</p>
+<p>連鎖律 (1.112) を使えば3表式の最後:</p>
+<p>$$I[x,y] = H[x] + H[y] - H[x, y]$$</p>
+<p>$x$ と $y$ が独立 $\Longleftrightarrow$ $p(x,y) = p(x)p(y)$ $\Longleftrightarrow$ $I[x,y] = 0$。</p>
+
+<div class="callout gap">
+<span class="label">具体例: 相互情報量 =「片方を知ると、もう片方がどれだけ読めるか」</span>
+<p>$I[x,y] = H[y] - H[y|x]$ という形が いちばん直感的です。 「$y$ の不確実性 $H[y]$ が、 $x$ を知ったあとに $H[y|x]$ まで どれだけ減るか」、 その<strong>減少分</strong>が相互情報量。</p>
+<p>たとえば $x$＝「今日は雨か」、 $y$＝「道行く人が 傘を持っているか」。 雨の日は ほぼ全員 傘を持ち、 晴れの日は ほぼ持たない、 という強い関係があるなら、 <strong>天気 $x$ を知るだけで 傘 $y$ が ほぼ読める</strong> → $H[y|x]$ がぐっと小さくなり → $I$ は大きい。 逆に $x$＝「サイコロの目」と $y$＝「傘」のように 無関係なら、 $x$ を知っても $y$ の予想は 1ミリも 良くならない → $H[y|x] = H[y]$ → $I = 0$。 つまり <strong>$I = 0$ は「独立（知っても無意味）」と完全に同じ意味</strong>です。</p>
+</div>
+
+<figure class="figure" id="fig15">
+<img src="figs/fig13_mutual_info.svg" alt="相互情報量のベン図: H[x]とH[y]の重なりがI[x,y]">
+<figcaption><strong>図15.</strong> 相互情報量のベン図。 $H[x]$ と $H[y]$ を2つの円とすると、 重なりが 相互情報量 $I[x,y]$、 重ならない部分が それぞれ条件付きエントロピー $H[x|y]$, $H[y|x]$。 円の合併全体が 同時エントロピー $H[x,y]$。 独立なら 重なり（$I$）はゼロです。</figcaption>
+</figure>
+
+<div class="callout key">
+<span class="label">演習 1.31 はこの $I[x,y] \ge 0$ の自然な帰結</span>
+<p id="eq-1-152">$$I[x,y] = H[x] + H[y] - H[x,y] \ge 0 \quad \Longleftrightarrow \quad H[x,y] \le H[x] + H[y] \quad \text{(式 1.152)}$$</p>
+<p>等号は独立のとき。「不確実性は連結すると減るか同じ」と読める。</p>
+</div>
+
+<p class="muted">参考: <a href="https://lib-arts.hatenablog.com/entry/VariationalInference2">Liberal Art's diary Jensen不等式とKL非負性</a> / <a href="https://masamunetogetoge.com/entropy-kldivergence">マサムネの部屋 エントロピーからKL</a></p>
+
+<p class="muted">▼ この節の内容を使う章末演習です。 まず自分で手を動かしてから、 解答を開いてください。</p>
+<div class="exercise-card">
+<div class="ex-head">演習 1.31 ∗∗ — 同時エントロピー不等式 (§1.6)</div>
+<div class="ex-problem">
+<span class="plabel">問題</span>
+同時分布 $p(x, y)$ を持つ2つの変数 $x, y$ を考える。この2変数組の微分エントロピーが
+$$H[x, y] \le H[x] + H[y] \quad (1.152)$$
+を満たすことを示せ。等号が成り立つのは、 $x$ と $y$ が統計的に独立なとき、かつそのときに限る。
+</div>
+<div class="ex-solution">
+<span class="slabel">完全解答</span>
+<p><strong>方針</strong>: 相互情報量 $I[x,y]$ がエントロピーの差で書けることを示し、 KL非負性から不等式を導く。 等号条件は「KL=0 ⇔ $p(x,y) = p(x)p(y)$ ⇔ 独立」で両方向。</p>
+
+<p><span class="step">Step 1.</span> 相互情報量の3表現を導出する。</p>
+<p>定義 (<a href="#eq-1-120">式 1.120</a>):</p>
+<p>$$I[x,y] = \mathrm{KL}(p(x,y)\,\|\,p(x)p(y)) = \iint p(x,y) \ln\frac{p(x,y)}{p(x)p(y)}\, dx\, dy$$</p>
+<p>分子分母の対数を分けて:</p>
+<p>$$I[x,y] = \iint p(x,y) \big[\ln p(x,y) - \ln p(x) - \ln p(y)\big]\, dx\, dy$$</p>
+<p>3項に分け、 周辺化 ($\int p(x,y) dy = p(x)$ など) を使って整理:</p>
+<ul>
+  <li>第1項: $\iint p(x,y) \ln p(x,y)\, dx\, dy = -H[x,y]$ （同時エントロピーの定義の符号反転）</li>
+  <li>第2項: $-\iint p(x,y) \ln p(x)\, dx\, dy = -\int p(x) \ln p(x)\, dx = H[x]$ （周辺化）</li>
+  <li>第3項: 同様に $H[y]$</li>
+</ul>
+<p>$$\therefore\ I[x,y] = -H[x,y] + H[x] + H[y] = H[x] + H[y] - H[x,y]$$</p>
+
+<p><span class="step">Step 2.</span> KL 非負性から不等式を出す。</p>
+<p><a href="#ss-9-3">§9.3</a> で示した通り (Jensen 不等式から):</p>
+<p>$$I[x,y] = \mathrm{KL}(p(x,y)\,\|\,p(x)p(y)) \ge 0$$</p>
+<p>Step 1 の表式を代入:</p>
+<p>$$H[x] + H[y] - H[x,y] \ge 0 \;\Longleftrightarrow\; \boxed{H[x,y] \le H[x] + H[y] \qquad (1.152)\ \checkmark}$$</p>
+
+<p><span class="step">Step 3.</span> 等号条件 (両方向を示す)。</p>
+<p>「等号 $\Leftrightarrow$ 独立」を両方向で:</p>
+<ol>
+  <li><strong>($\Leftarrow$) 独立 ⇒ 等号</strong>: $p(x,y) = p(x)p(y)$ なら定義から $\mathrm{KL}(p(x,y)\,\|\,p(x)p(y)) = \mathrm{KL}(p(x,y)\,\|\,p(x,y)) = 0$、 ゆえに $I = 0$、 ゆえに $H[x,y] = H[x] + H[y]$。</li>
+  <li><strong>($\Rightarrow$) 等号 ⇒ 独立</strong>: $I[x,y] = 0$ なら $\mathrm{KL}(p(x,y)\,\|\,p(x)p(y)) = 0$。 KL の等号条件は (<a href="#ss-9-3">§9.3</a> で示したように $-\ln$ が狭義凸であることから) $p(x,y) = p(x)p(y)$ ($p$-a.s.)、 すなわち $x, y$ は独立。</li>
+</ol>
+<p><strong>結論</strong>: $H[x,y] \le H[x] + H[y]$、 等号成立 $\Leftrightarrow$ $x$ と $y$ は統計的独立。</p>
+
+<p><strong>解釈</strong>: 2変数を組み合わせると不確実性は減るか同じ（増えはしない）。 「$x$ を知れば $y$ の不確実性は減る (またはそのまま)」が情報理論的に表現された式。 減り分が相互情報量 $I[x,y] = H[y] - H[y|x]$。</p>
+
+<p class="muted">注: PRML (1.152) は微分エントロピー (連続版) で書かれていますが、 上の証明は離散・連続いずれでも成立します。</p>
+</div>
+</div>
+
+<h2 id="sec11">10. 参考リンク集</h2>
+
+<h3>PRML 章ノート・演習解答</h3>
+<ul>
+  <li><a href="https://tips-memo.com/prml">Beginaid PRML演習問題解答 全力解説（目次）</a> — 章末演習を日本語で</li>
+  <li><a href="https://qiita.com/Lab_of_Biomet/items/15e38ca34fafa8176d89">Qiita 演習解答まとめ</a></li>
+  <li><a href="https://www.nomuyu.com/prml_summary/">nomulog PRML解説記事まとめ</a></li>
+  <li><a href="https://lp-tech.net/articles/lyKGr">LP-Tech 第1章まとめ Part.1</a> / <a href="https://lp-tech.net/articles/f11KJ?page=2">Part.2</a></li>
+  <li><a href="https://zenn.dev/naoki0103/books/study-record-prml/viewer/chapter1">Zenn 勉強記録 PRML編 第1章</a></li>
+  <li><a href="https://ik.hatenablog.com/entry/prml1">はてな ik 第1章と併せて読みたい記事</a></li>
+  <li><a href="http://directorscut82.github.io/osaka_prml_reading/ex_01_21-30.html">大阪PRML読書会 第1章 演習 1.21-1.30</a></li>
+  <li><a href="https://restus.co.jp/prml/solutions-to-exercises.pdf">合同会社レスタス 演習解答PDF</a></li>
+</ul>
+
+<h3>ガウス積分</h3>
+<ul>
+  <li><a href="https://ja.wikipedia.org/wiki/%E3%82%AC%E3%82%A6%E3%82%B9%E7%A9%8D%E5%88%86">ガウス積分 (Wikipedia)</a></li>
+  <li><a href="https://k-san.link/gaussian-integral/">k-san.link ガウス積分の証明</a></li>
+  <li><a href="https://math-note.xyz/calculus/gaussian-integral/">math-note 極座標から</a></li>
+  <li><a href="https://www.hello-statisticians.com/explain-terms-cat/gaussian_integral1.html">hello-statisticians ガウス積分と正規化</a></li>
+</ul>
+
+<h3>次元の呪い</h3>
+<ul>
+  <li><a href="https://qiita.com/tn1031/items/96e7131cd41df1aebe85">Qiita 次元の呪い (tn1031)</a></li>
+  <li><a href="https://windfall.hatenablog.com/entry/2015/07/02/084623">蛍光ペンの交差点 サクサクメロンパン問題</a></li>
+  <li><a href="https://qiita.com/ae14watanabe/items/ef5689d40a0fbee957ea">Qiita 高次元正規分布は超球面状</a></li>
+  <li><a href="https://mathwords.net/kyumensyutyugensho">mathwords 球面集中現象</a></li>
+  <li><a href="https://ibisforest.org/index.php?%E6%AC%A1%E5%85%83%E3%81%AE%E5%91%AA%E3%81%84=">朱鷺の杜Wiki 次元の呪い</a></li>
+</ul>
+
+<h3>KLダイバージェンス</h3>
+<ul>
+  <li><a href="https://lib-arts.hatenablog.com/entry/VariationalInference2">Liberal Art's diary Jensen不等式と KL非負性</a></li>
+  <li><a href="https://masamunetogetoge.com/entropy-kldivergence">マサムネの部屋 エントロピーからKL</a></li>
+  <li><a href="https://www.math-joy-life.com/kullback-leibler-divergence">マスジョイ KLダイバージェンス基礎から</a></li>
+</ul>
+
+<h3>動画 (任意・直感補強)</h3>
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=HZGCoVF3YvM">3Blue1Brown Bayes theorem</a></li>
+  <li><a href="https://www.youtube.com/playlist?list=PL17567A1A3F5DB5E4">mathematicalmonk Probability Primer</a></li>
+  <li><a href="https://www.youtube.com/watch?v=uP5pCKC9FMM">ヨビノリ KLダイバージェンス</a></li>
+</ul>
+
+<footer>
+<p><strong>使い方の推奨</strong>: 第1パス (30分) で §0 → §1 → §10 を概観 → 第2パス (90分) で §2〜<a href="#sec9">§9</a> をじっくり読む（本があれば照合、 なくてもこのプリントで完結します） → 第3パス (180分) で 各節に置いた6演習を自力で解く → 仕上げ (20分) で自分の言葉でまとめる。</p>
+<p>このまとめは Bishop が省略した行間を、解説・具体例・自前の図で埋め、<strong>本がなくても読み通せる</strong>ようにしたものです。 さらに厳密に確かめたい人は、 本文と公式解答PDFで裏取りもできます。</p>
+</footer>
+
+</body>
+</html>
