@@ -1696,7 +1696,29 @@ $$H[x] = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\} \quad (1.110)$$
 
 <p><strong>条件付きエントロピー</strong> (<a href="#eq-1-111">式 1.111</a>):</p>
 <p id="eq-1-111">$$H[y|x] = -\iint p(y, x)\ln p(y|x)\, dy\, dx$$</p>
-<p class="muted">中身を読むと: 各 $x$ について「その $x$ のもとでの $y$ のエントロピー」を計算し、 それを $x$ の分布で<strong>平均</strong>したもの。 つまり「$x$ を知ったあとに残る $y$ の散らばり」の平均です（$\ln$ の中が $p(y|x)$＝条件付き、 重みが $p(y,x)$＝同時、 なのがポイント）。</p>
+<p class="muted">中身を読むと: 各 $x$ について「その $x$ のもとでの $y$ のエントロピー」を計算し、 それを $x$ の分布で<strong>平均</strong>したもの。 つまり「$x$ を知ったあとに残る $y$ の散らばり」の平均です。</p>
+
+<div class="callout gap">
+<span class="label">なぜ この式になるのか — 普通のエントロピーから 2ステップで組み立てる</span>
+<p>知っている<strong>普通のエントロピー</strong>（§9.1: $H[y] = -\int p(y)\ln p(y)\,dy$＝「驚き $-\ln p(y)$ を $p(y)$ で平均」）から、 順番に作ってみます。</p>
+<p><strong>ステップ1: まず $x$ を 1つの値に固定する。</strong> $x$ が ある特定の値だと<strong>分かっている</strong>なら、 そのとき $y$ が従う分布は <strong>条件付き $p(y|x)$</strong>。 だから その不確実性は、 ただの「$p(y|x)$ のエントロピー」:</p>
+<p>$$H\big[y \mid x{=}\text{その値}\big] = -\int p(y|x)\,\ln p(y|x)\, dy$$</p>
+<p>普通のエントロピーの $p(y)$ を $p(y|x)$ に<strong>差し替えただけ</strong>です（$x$ を知った後 $y$ は $p(y|x)$ に従うので、 驚きも $\ln p(y|x)$ で測る）。 これは <strong>$x$ ごとに値が変わる</strong>（$x$ の関数）。</p>
+<p><strong>ステップ2: $x$ 自身も ばらつくので、 $x$ で平均する。</strong> $x$ は $p(x)$ に従って ふらつくので、 「$x$ を知ったときの $y$ の不確実性」は、 ステップ1を <strong>$x$ の分布で重みづけ平均</strong>したもの:</p>
+<p>$$H[y|x] = \int p(x)\,\Big[\underbrace{-\int p(y|x)\ln p(y|x)\,dy}_{\text{その }x\text{ での }y\text{ のエントロピー}}\Big]dx = -\iint \underbrace{p(x)\,p(y|x)}_{=\,p(y,x)}\,\ln p(y|x)\, dy\, dx$$</p>
+<p>最後に product rule $p(x)p(y|x) = p(y,x)$ でまとめれば、 式 1.111 の完成です。 <strong>「$\ln$ の中が条件付き $p(y|x)$、 重みが同時 $p(y,x)$」</strong>という一見ヘンな組み合わせは、 「①各 $x$ で 条件付きの驚き → ②同時分布で平均」という作り方の<strong>そのままの結果</strong>。 ここが腑に落ちると 式が自然に見えます。</p>
+</div>
+
+<div class="callout gap">
+<span class="label">数字で確認: 傘の例</span>
+<p>$x$＝天気（晴 / 雨 が 各 50%）、 $y$＝傘を持つか。 晴なら 傘 10%、 雨なら 傘 90% とします。</p>
+<ul>
+  <li>晴のときの $y$ のエントロピー: $H(0.1) = -0.1\ln 0.1 - 0.9\ln 0.9 \approx 0.325$</li>
+  <li>雨のときの $y$ のエントロピー: $H(0.9) \approx 0.325$（左右対称で同じ）</li>
+  <li>$x$ で平均: $H[y|x] = 0.5\times 0.325 + 0.5\times 0.325 = \mathbf{0.325}$ ナット</li>
+</ul>
+<p>いっぽう 天気を知らなければ、 傘の確率は $0.5\times0.1 + 0.5\times0.9 = 0.5$、 エントロピーは $H(0.5) = \ln 2 \approx \mathbf{0.693}$。 <strong>天気を知ると不確実性が 0.693 → 0.325 に減った</strong>。 この減り分 $0.693 - 0.325 = 0.368$ が、 次に出る相互情報量 $I[x,y]$ です。</p>
+</div>
 <p><strong>連鎖律 (<a href="#eq-1-112">式 1.112</a>)</strong>: product rule $p(y,x) = p(y|x)p(x)$ を $\ln$ に入れて整理すると、 エントロピーにも 同じ形の連鎖律が出ます:</p>
 <p id="eq-1-112">$$H[x, y] = H[x] + H[y|x] \qquad \text{(式 1.112、 演習 1.37)}$$</p>
 <p class="muted">意味: <strong>「$x$ と $y$ を両方 言い当てる手間（全不確実性 $H[x,y]$）」 ＝ 「まず $x$ を言い当てる手間 $H[x]$」 ＋ 「$x$ を知った上で、 残りの $y$ を言い当てる手間 $H[y|x]$」</strong>。 2人を順番に当てるときの自然な足し算です。</p>
