@@ -1653,13 +1653,36 @@ $$H[x] = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\} \quad (1.110)$$
 <p><strong>等号条件</strong>: $-\ln$ は<strong>狭義</strong>凸 (strictly convex) なので、 Jensen の等号 ⟺ $q/p$ が $p$-a.s. に定数 $c$。 さらに $\int q\, dx = \int p \cdot (q/p)\, dx = c \cdot 1 = c$、 一方 $\int q\, dx = 1$ なので $c = 1$。 ∴ $p = q$ ($p$-a.s.)。</p>
 </div>
 
-<h4>KLと最尤推定の橋渡し（式 1.119）</h4>
-<p>真の分布 $p(x)$ から得たデータ $\{x_n\}_{n=1}^{N}$ に対し、 経験分布で期待値を近似:</p>
-<p>$$\mathrm{KL}(p\,\|\,q(\cdot|\theta)) \;\simeq\; \frac{1}{N}\sum_{n=1}^{N}\left[-\ln q(x_n|\theta) + \ln p(x_n)\right]$$</p>
-<p class="muted">注: PRML 印刷版 (1.119) は $\tfrac{1}{N}$ なしで書かれていますが、これは「期待値をサンプル平均で近似する」(式 1.35) の規約をそのまま使っているため。 本まとめでは $1/N$ を明示する形に書いています。 $\theta$ の最大化点は両形式で同じ。</p>
-<p>右辺の第2項 $\ln p(x_n)$ は $\theta$ に依らない。 第1項は<strong>負の対数尤度</strong>そのもの。 よって:</p>
-<p>$$\arg\min_\theta \mathrm{KL}(p\,\|\,q(\cdot|\theta)) \;=\; \arg\max_\theta \sum_n \ln q(x_n|\theta) \;=\; \theta_{\mathrm{ML}}$$</p>
-<p><strong>最尤推定とは「経験分布と $q(\cdot|\theta)$ の KL を最小化すること」</strong>。 推定論と情報理論の最も美しい橋渡し。 後の章では変分推論やGAN などでこの等価性が繰り返し使われます。</p>
+<h4 id="ss-9-3-5">KLと最尤推定の橋渡し（<a href="#eq-1-119">式 1.119</a>）</h4>
+
+<div class="callout key">
+<span class="label">まず結論: 最尤推定 = 「真の分布」と「自分のモデル」の KL を最小化すること</span>
+<p>別物だと思っていた 2つが、 じつは<strong>同じ操作</strong>だった、 という話です:</p>
+<ul>
+  <li><strong>最尤推定（MLE）</strong>: 「手元のデータが いちばん出やすくなる θ を選ぶ」（§4.3, §5.1 でやったやつ）</li>
+  <li><strong>KL 最小化</strong>: 「自分のモデル $q$ を、 真の分布 $p$ に いちばん近づける θ を選ぶ」</li>
+</ul>
+<p>この2つが <strong>ぴったり一致</strong>します。 だから MLE は「なんとなくデータに合わせている」のではなく、 裏で<strong>こっそり『真実への近さ（KL）』を最小化している</strong>。 これが「情報理論（KL）と 推定論（MLE）の橋渡し」と呼ばれる理由です。</p>
+</div>
+
+<p><strong>なぜそうなるか、 3ステップで。</strong></p>
+
+<p><strong>ステップ1: 「近さ」を KL で測る。</strong> 真の分布 $p(x)$（データを生む"神様の分布"、 中身は不明）に、 自分のモデル $q(x|\theta)$ を近づけたい。 近さは KL で測ります（§9.3）:</p>
+<p>$$\mathrm{KL}(p\,\|\,q) = \int p(x)\,\ln\frac{p(x)}{q(x|\theta)}\,dx = \underbrace{E_p\!\left[\ln p(x) - \ln q(x|\theta)\right]}_{p\ \text{のもとでの平均（期待値）}}$$</p>
+
+<p><strong>ステップ2: でも $p$ は知らない → サンプル平均で近似する</strong>（これが「経験分布で近似」の意味）。 KL は「$p$ のもとでの期待値」ですが、 真の分布 $p$ の中身は分かりません。 分かっているのは <strong>$p$ から実際に取れたデータ $\{x_1,\ldots,x_N\}$</strong> だけ。 ここで<strong>期待値は サンプルの ただの平均で近似できる</strong>（式 1.35。 データ自体が $p$ に従って出ているので、 「$p$ で重みづけた平均」≒「サンプルの平均」）:</p>
+<p id="eq-1-119">$$\mathrm{KL}(p\,\|\,q) \;\simeq\; \frac{1}{N}\sum_{n=1}^{N}\Big[\,\underbrace{\ln p(x_n)}_{\theta\,\text{に無関係}} \;-\; \underbrace{\ln q(x_n|\theta)}_{\theta\,\text{を含む}}\,\Big] \qquad \text{(式 1.119)}$$</p>
+
+<p><strong>ステップ3: θ で最小化 → 第1項が消えて、 残るのは「対数尤度」。</strong> 上を θ について最小化します。 第1項 $\ln p(x_n)$ は<strong>真の分布の値で、 θ を動かしても変わらない定数</strong>（最小値の"場所"に効かないので無視できる）。 残った第2項だけ見ると:</p>
+<p>$$\arg\min_\theta \mathrm{KL}(p\,\|\,q) \;=\; \arg\min_\theta\!\left[-\frac{1}{N}\sum_n \ln q(x_n|\theta)\right] \;=\; \arg\max_\theta \sum_n \ln q(x_n|\theta) \;=\; \theta_{\mathrm{ML}}$$</p>
+<p>最後の $\sum_n \ln q(x_n|\theta)$ を最大化する θ こそ<strong>最尤推定 $\theta_{\mathrm{ML}}$</strong>（＝対数尤度の最大化、 §4.3/§5.1）。 マイナスが付いているので「最小化」がそのまま「最大化」に化けただけです。</p>
+
+<div class="callout gap">
+<span class="label">ひとことで</span>
+<p><strong>「KL を最小化（モデルを真実に近づける）」＝「対数尤度を最大化（データに合わせる）」</strong>。 途中の $\ln p(x_n)$ が θ に無関係で<strong>消えてくれる</strong>おかげで、 知らないはずの真の分布 $p$ を使わずに、 手元のデータだけで KL 最小化が実行できる ——それが最尤推定の正体だった、 というわけです。 だから MLE は「<strong>forward KL の最小化</strong>」とも呼ばれます（上の forward/reverse の話で、 経験分布が $p$、 自分のモデルが $q$）。</p>
+</div>
+
+<p class="muted">注: PRML 印刷版 (1.119) は $\tfrac{1}{N}$ なしで $\sum_n\{-\ln q + \ln p\}$ と書かれていますが、 これは「期待値をサンプル平均で近似する」(式 1.35) の規約をそのまま使っているため。 $1/N$ を付けても 最大化する θ は同じ。 後の章では 変分推論や GAN などで この等価性が くり返し使われます。</p>
 
 <h3 id="ss-9-4">9.4 条件付きエントロピーと相互情報量（<a href="#eq-1-111">式 1.111</a>, 1.112, 1.120, 1.121）</h3>
 
