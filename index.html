@@ -1365,6 +1365,20 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
 <p class="muted">代表例: <strong>(a)</strong> 素朴ベイズ・混合ガウス・隠れマルコフ／ <strong>(b)</strong> ロジスティック回帰・ニューラルネット（softmax）／ <strong>(c)</strong> サポートベクターマシン（素）・パーセプトロン。</p>
 </div>
 
+<div class="callout gap">
+<span class="label">「ベイズで $p(\mathcal{C}_k|x)$ を出す」って具体的に何をするの？</span>
+<p>生成モデル (a) が手元に用意するのは 2つ: <strong>尤度 $p(x|\mathcal{C}_k)$</strong>（「もしクラス $k$ なら、 この写真 $x$ はどれくらい出やすいか」）と <strong>事前 $p(\mathcal{C}_k)$</strong>（「そもそもクラス $k$ はどれくらい多いか」）。 でも本当に欲しいのは <strong>事後 $p(\mathcal{C}_k|x)$</strong>（「この写真を見て、 猫である確率」）。 この<strong>向きの変換に使うのがベイズ則</strong>（<a href="#ss-2-1">§2.1</a>）です:</p>
+<p>$$p(\text{猫}|x) = \frac{\overbrace{p(x|\text{猫})}^{\text{尤度}}\;\overbrace{p(\text{猫})}^{\text{事前}}}{p(x)}, \qquad p(x) = p(x|\text{猫})\,p(\text{猫}) + p(x|\text{犬})\,p(\text{犬})$$</p>
+<p>「<strong>ベイズで比べる</strong>」とは、 各クラスについて <strong>尤度 × 事前</strong>（＝「猫らしさ」「犬らしさ」）を計算して、 <strong>大きいほうを選ぶ</strong>こと。 分母 $p(x)$ は両クラスで共通なので、 <strong>勝ち負けを決めるだけなら無視してOK</strong>（分子 ＝ 尤度×事前 だけ比べればよい）。</p>
+<p><strong>数字で</strong>: ある写真について、 生成モデルが $p(x|\text{猫})=0.6$（けっこう猫っぽい）、 $p(x|\text{犬})=0.2$ と言ったとします。 事前が五分五分 $p(\text{猫})=p(\text{犬})=0.5$ なら:</p>
+<ul>
+  <li>猫らしさ $= 0.6 \times 0.5 = 0.30$</li>
+  <li>犬らしさ $= 0.2 \times 0.5 = 0.10$</li>
+  <li>$\Rightarrow\ p(\text{猫}|x) = 0.30 / (0.30 + 0.10) = \mathbf{0.75}$。 猫の勝ち。</li>
+</ul>
+<p><strong>事前が効く例</strong>: もし犬のほうが ずっと多い地域で $p(\text{猫})=0.1$、 $p(\text{犬})=0.9$ だったら、 猫らしさ $=0.6\times0.1=0.06$、 犬らしさ $=0.2\times0.9=0.18$ → $p(\text{猫}|x)=0.06/0.24=\mathbf{0.25}$ で <strong>今度は犬</strong>。 <strong>同じ写真でも 事前（クラスの多さ）しだいで判定が変わる</strong>。 これが「尤度 × 事前」というベイズの効き目で、 <a href="#sec2">§2.1</a> の検査の例（事前1%が効いて事後9%になった話）と まったく同じ構造です。</p>
+</div>
+
 <p class="muted"><strong>向きの読み方</strong>: 最後に欲しいのは「この入力 $x$ はどのクラス？」 $= p(\mathcal{C}_k \mid x)$（左がクラス＝知りたいこと）。 (b) はそれを<strong>直接</strong>狙う向き。 (a) はあえて逆向きの $p(x \mid \mathcal{C}_k)$（「クラス $k$ のデータはどんな見た目か」）をモデル化し、 <strong>Bayes 則で $p(\mathcal{C}_k \mid x)$ に反転</strong>させます（→ <a href="#ss-2-1">§2.1</a> 早見表）。 なぜ遠回りするのか＝逆向きの方がモデル化しやすい場合や、 副産物の $p(x)$（データ全体の分布）が外れ値検出に使えるから。</p>
 <table>
 <thead><tr><th>アプローチ</th><th>何をモデル化</th><th>長短</th></tr></thead>
