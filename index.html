@@ -1351,7 +1351,20 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
 
 <h3 id="ss-8-3">8.3 §1.5.4 推論と決定 — 「なぜ事後確率を計算する価値があるか」(輪読頻出)</h3>
 
-<p>PRML は決定の3アプローチを示します:</p>
+<p>PRML は決定（分類）の<strong>3アプローチ</strong>を示します。 ここが分かりにくいので、 まず直感から。</p>
+
+<div class="callout gap">
+<span class="label">まず直感: 3アプローチは「どこまで作り込むか」の3段階（猫 vs 犬で）</span>
+<p>写真を見て「猫か犬か」を当てる問題で考えます。 3つは <strong>「どこまで本気でモデルを作るか」の度合い</strong>が違うだけ。 作り込みが<strong>多い順</strong>に:</p>
+<ul>
+  <li><strong>(a) 生成モデル</strong>: 「<strong>猫の見た目</strong>」と「<strong>犬の見た目</strong>」を それぞれ<strong>丸ごと覚える</strong>。 つまり各クラスのデータ分布 $p(x|\text{猫})$, $p(x|\text{犬})$ を学ぶ。 新しい写真は「猫らしさ vs 犬らしさ」を<strong>ベイズで比べて</strong>判定。 覚えた分布から<strong>偽物の猫写真を"生成"できる</strong>ほど作り込む（だから「生成」モデル）。 ← いちばん多くを学ぶ。</li>
+  <li><strong>(b) 識別モデル</strong>: 猫や犬が<strong>一般にどんな見た目か</strong>は気にせず、 「<strong>この写真が猫である確率は 0.8</strong>」という<strong>事後確率 $p(\text{猫}|x)$ だけ</strong>を直接学ぶ。 見分けに必要な分<strong>だけ</strong>。 ← 中間。</li>
+  <li><strong>(c) 判別関数</strong>: 確率すら出さず、 写真 → 「猫」か「犬」の<strong>ラベルを直接返す</strong>関数を1個学ぶ。 ← いちばん少ない（ただの Yes/No ルール）。</li>
+</ul>
+<p>カギは <strong>「(a) → (b) → (c) で 作り込みが だんだん減る」</strong>こと。 (a) は<strong>多くを得られる</strong>（$p(x)$＝データ全体の分布まで手に入り、 データ生成も外れ値検出もできる）が、 そのぶん<strong>大変</strong>（x の分布を丸ごと学ぶ＝高次元だとほぼ無理、 データも大量に要る）。 (c) は<strong>楽</strong>だが、 確率が無いので後で何もできない。 (b) は「<strong>判定に必要な事後確率だけを 過不足なく学ぶ</strong>」中庸で、 純粋な分類では実用上いちばん強いことが多い。</p>
+<p class="muted">代表例: <strong>(a)</strong> 素朴ベイズ・混合ガウス・隠れマルコフ／ <strong>(b)</strong> ロジスティック回帰・ニューラルネット（softmax）／ <strong>(c)</strong> サポートベクターマシン（素）・パーセプトロン。</p>
+</div>
+
 <p class="muted"><strong>向きの読み方</strong>: 最後に欲しいのは「この入力 $x$ はどのクラス？」 $= p(\mathcal{C}_k \mid x)$（左がクラス＝知りたいこと）。 (b) はそれを<strong>直接</strong>狙う向き。 (a) はあえて逆向きの $p(x \mid \mathcal{C}_k)$（「クラス $k$ のデータはどんな見た目か」）をモデル化し、 <strong>Bayes 則で $p(\mathcal{C}_k \mid x)$ に反転</strong>させます（→ <a href="#ss-2-1">§2.1</a> 早見表）。 なぜ遠回りするのか＝逆向きの方がモデル化しやすい場合や、 副産物の $p(x)$（データ全体の分布）が外れ値検出に使えるから。</p>
 <table>
 <thead><tr><th>アプローチ</th><th>何をモデル化</th><th>長短</th></tr></thead>
@@ -1361,6 +1374,8 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
 <tr><td>(c) 判別関数</td><td>$x$ → クラス番号への決定的写像</td><td>軽いが確率出ない、後処理が効かない</td></tr>
 </tbody>
 </table>
+
+<p>では「(a)(b) のように<strong>事後確率 $p(\mathcal{C}_k|x)$ を持っておく</strong>と、(c) と比べて 何が嬉しいのか？」 — これが §1.5.4 の核心で、 <strong>輪読で必ず問われます</strong>。 答えが次の4つ。 逆に言えば、 <strong>(c) 判別関数は確率を出さないので、 この4つが どれもできない</strong>のが弱点です。</p>
 
 <div class="callout key">
 <span class="label">事後確率を持つべき4つの理由（PRML p.44-46、 輪読で必ず問われる）</span>
