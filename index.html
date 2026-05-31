@@ -636,6 +636,9 @@ i = 0:\quad & N\, w_0 \;+\; \big(\textstyle\sum_n x_n\big)\, w_1 \;=\; \textstyl
 i = 1:\quad & \big(\textstyle\sum_n x_n\big)\, w_0 \;+\; \big(\textstyle\sum_n x_n^2\big)\, w_1 \;=\; \textstyle\sum_n x_n t_n
 \end{aligned}$$</p>
 <p>これは <strong>高校〜大学で習う「最小二乗法による直線フィット」の公式そのもの</strong>です。 つまり 一般の (1.122) は、 この見慣れた 2本の式を 任意の次数 $M$（$M+1$ 本）に拡張しただけ。 添字の正体も見えてきます: <strong>$A_{ij}$ は「入力のべきの合計を 縦横に並べた $(M{+}1)\times(M{+}1)$ の表（行列）」</strong>、 <strong>$T_i$ は「正解 $t_n$ に 入力のべき $x_n^i$ を掛けて足した 縦ベクトル」</strong>。 $i$ が行番号、 $j$ が列番号です。</p>
+<p><strong>「学校の公式」と本当に一致するか、 解いて確認:</strong> 上の2本（$2\times2$ 連立）を $w_0, w_1$ について解くと、</p>
+<p>$$w_1 = \frac{N\sum_n x_n t_n - \big(\sum_n x_n\big)\big(\sum_n t_n\big)}{N\sum_n x_n^2 - \big(\sum_n x_n\big)^2} = \frac{\sum_n (x_n-\bar x)(t_n-\bar t)}{\sum_n (x_n-\bar x)^2} = \frac{\text{共分散}}{\text{分散}}, \qquad w_0 = \bar t - w_1\,\bar x$$</p>
+<p>（$\bar x, \bar t$ は平均）。 まさに 数学I「データの分析」や 統計入門で習う<strong>回帰直線の公式そのもの</strong>です: 傾き＝「共分散 ÷ 分散」、 切片は 回帰直線が <strong>平均点 $(\bar x, \bar t)$ を通る</strong>ことから。 だから「正規方程式の $M=1$」＝「学校の最小二乗の直線」で 間違いありません（実際に numpy の <code>polyfit</code> と 一致することも 数値で確認済み）。</p>
 </div>
 </div>
 </div>
