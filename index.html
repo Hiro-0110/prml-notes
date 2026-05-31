@@ -790,6 +790,17 @@ $$\underbrace{p(\mathbf{w}\mid \mathcal{D})}_{\text{事後}} \;=\; \frac{\overbr
 <p>$$\frac{\text{表}\ 3 + \overbrace{1}^{\text{偽の表}}}{(\text{表}\ 3 + 1) + (\text{裏}\ 0 + \underbrace{1}_{\text{偽の裏}})} = \frac{4}{5} = 0.8$$</p>
 <p>分子の $+1$ が「偽の表」、 分母の $+2$ が「偽の表 ＋ 偽の裏」。 この"水増し"のおかげで、 <strong>裏が1回も出ていなくても 裏の確率を 0 にしない</strong>（＝表を 1 と断言しない）。 一般化すると、 $N$ 回中 $m$ 回 表なら「次が表」の確率は $\dfrac{m+1}{N+2}$ ＝<strong>ラプラスの継起則</strong>。</p>
 <p class="muted"><strong>ちゃんと計算すると（任意）</strong>: 表の確率を $\mu$ とおくと、 一様な事前は $p(\mu)=1$、 表3回の尤度は $p(\text{データ}\mid\mu)=\mu^3$。 事後は $p(\mu\mid\text{データ})\propto \mu^3$（規格化して $4\mu^3$）。 「次が表」の確率は、 この事後で $\mu$ を平均した値: $\displaystyle\int_0^1 \mu\cdot 4\mu^3\,d\mu = 4\cdot\tfrac{1}{5} = \tfrac{4}{5}$。 ＝<strong>事後分布の平均（重心）</strong>で、 図5 の赤い分布の重心が ちょうど 0.8 にあたります。</p>
+<div class="callout key">
+<span class="label">超重要な勘違い: $p(\mu)=1$ は「表の確率が1」では ない</span>
+<p>「$p(\mu)=1$ なら 絶対 表が出るのでは？」——とても よくある、 そして大事な勘違いです。 <strong>2つの違うものを区別</strong>してください:</p>
+<ul>
+  <li><strong>$\mu$</strong> ＝ 知りたい「<strong>表が出る確率</strong>」。 $0$〜$1$ の<strong>数</strong>（コインの偏り）。 これが $\mu=1$ なら たしかに「絶対 表」。</li>
+  <li><strong>$p(\mu)$</strong> ＝ 「その $\mu$ が どれくらい ありえそうか」を表す<strong>分布（密度）</strong>。 $\mu$ そのものでは ない。</li>
+</ul>
+<p>「一様な事前 $p(\mu)=1$」は、 <strong>$\mu$ が 0〜1 の どの値も 等しく ありえる</strong>（フェアな 0.5 かも、 表寄りの 0.9 かも、 裏寄りの 0.1 かも、 ぜんぶ 同じくらい もっともらしい）という<strong>「まだ 何も分からない」状態</strong>のこと。 その密度が <strong>高さ 1 で 真っ平ら</strong>なのは、 <strong>面積を 1 にするため</strong>です（横幅が $1-0=1$ なので、 高さ 1 で 面積 $=1$）。 <a href="#ss-2-2">§2.2</a> でやった「密度の高さ自体に 意味はなく、 面積が 1」の話そのもの。</p>
+<p><strong>図5 の青い線を見てください</strong>: $\mu=0$ から $\mu=1$ まで <strong>高さ 1 の 真っ平らな横線</strong>。 これが $p(\mu)=1$。 「$\mu=1$（絶対 表）」は その横線の<strong>右端の1点</strong>にすぎず、 $\mu=0$（絶対 裏）や $\mu=0.5$（フェア）と <strong>まったく同じ高さ＝同じ もっともらしさ</strong>。 つまり 一様事前は「表が確実」どころか、 <strong>表寄り・裏寄り・フェア を 平等に扱う、 いちばん 中立な事前</strong>なのです。</p>
+</div>
+
 <p><strong>そう、これは まさに ベイズ則です。</strong> ラプラスの継起則は「新しい別の規則」ではなく、 <a href="#ss-3-2">§3.2</a> のベイズ則 <strong>事後 ∝ 尤度 × 事前</strong> を、 一様事前＋コインに当てはめた<strong>結果</strong>に 名前が付いただけ。 中身は2段階です:</p>
 <ol>
   <li><strong>ベイズ則</strong>で 事後を出す: $\overbrace{p(\mu|\text{データ})}^{\text{事後}} \propto \overbrace{\mu^3}^{\text{尤度}}\cdot\overbrace{1}^{\text{事前}}$。 これで μ についての<strong>分布</strong>（$4\mu^3$）が得られる。</li>
