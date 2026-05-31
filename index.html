@@ -542,7 +542,12 @@ $$E(\mathbf{w}) = \tfrac{1}{2} \sum_{n=1}^{N} \{ y(x_n, \mathbf{w}) - t_n \}^2$$
 <p>異なる N の比較や訓練 vs テストの比較には<strong>根平均二乗誤差 (RMS error)</strong> を使います:</p>
 <p id="eq-1-3">$$E_{\mathrm{RMS}} = \sqrt{2 E(\mathbf{w}^*) / N} \qquad \text{(式 1.3)}$$</p>
 <p>2 倍は (1.2) の $\tfrac{1}{2}$ を打ち消す、$N$ で割って単位を揃える、平方根で「$t$ と同じ単位」に。</p>
-<p>（本がなくても分かるように 言葉で説明すると）PRML の図1.5 は、 横軸に多項式の次数 $M$、 縦軸に $E_{\mathrm{RMS}}$ を取り、 <strong>訓練誤差とテスト誤差の2本の曲線</strong>を並べたグラフです。 訓練誤差は $M$ を上げるほど 単調に下がっていく（手元のデータには どんどん よく当たる）のに、 <strong>テスト誤差は ある $M$ で底を打ち、 その先では逆に跳ね上がる</strong>。 この「U字型」の底が ちょうどよい $M$。 右肩上がりの部分が過学習です。</p>
+<p>これを図にしたのが <strong>下の図2</strong> です。 横軸が 多項式の次数 $M$、 縦軸が $E_{\mathrm{RMS}}$。 <strong>訓練誤差</strong>（青）は $M$ を上げるほど 単調に下がる（手元のデータには どんどん よく当たる）のに、 <strong>テスト誤差</strong>（赤）は ある $M$ で底を打ち、 その先では 逆に跳ね上がる。 この「U字」の底が ちょうどよい $M$ で、 右肩上がりの部分が過学習です。</p>
+
+<figure class="figure" id="fig2">
+<img src="figs/fig16_train_test_error.svg" alt="多項式次数Mに対する訓練誤差とテスト誤差: 訓練は単調減、テストはU字">
+<figcaption><strong>図2.</strong> 訓練誤差とテスト誤差を 多項式の次数 $M$ ごとに描いたもの（PRML 図1.5 に相当）。 <strong>訓練誤差（青）は単調に減少</strong>し M=9 で ほぼ 0（全点を通る）だが、 <strong>テスト誤差（赤）は U字</strong>で、 M が大きすぎると 過学習で悪化する。 U字の底が「ちょうどよい M」。</figcaption>
+</figure>
 
 <h3 id="ss-1-4">1.4 過学習と正則化（<a href="#eq-1-4">式 1.4</a>）</h3>
 <p>M=9, N=10 で完全フィットになる代わりに $w_i$ が暴走します。 PRML 表 1.1 によれば:</p>
@@ -557,9 +562,9 @@ $$E(\mathbf{w}) = \tfrac{1}{2} \sum_{n=1}^{N} \{ y(x_n, \mathbf{w}) - t_n \}^2$$
 <p>$\lambda$ を大きくすると「 $\mathbf{w}$ を 0 に近づける罰金」が強まる。表 1.2 によると $M=9$ で $\ln\lambda = -18$ にすると $w_9^*$ は $72.68$ まで縮む（約1700倍の差！）。後の §1.2.5 で <strong>$\lambda$ は事前分布と雑音の精度の比 $\alpha/\beta$</strong> と解釈されます（MAP推定、 <a href="#ss-5-2">§5.2</a> 参照）。</p>
 <p class="muted">経験則: 「データ点数 $\geq$ パラメータ数の 5〜10 倍」（PRML p.9）。 ただし §3 では正則化により「実効パラメータ数」が下がるので、この経験則は緩みます。 また実用では切片 $w_0$ を正則化項から除く流派が多い（$t$ の原点シフトに対する不変性を保つため; PRML p.10 脚注）。</p>
 
-<figure class="figure" id="fig2">
+<figure class="figure" id="fig3">
 <img src="figs/fig10_regularization.svg" alt="M=9多項式: 正則化なしは激しく振動、正則化ありはなめらか">
-<figcaption><strong>図2.</strong> 正則化の効果。 同じ M=9 の多項式でも、 罰金（正則化）が無いと データに過剰反応して激しく振動するが（赤）、 罰金を入れると 係数の暴走が抑えられ なめらかな曲線になる（青）。 §1.4 の表で見た「$w_9$ が12万→72.68」が、 まさにこの 赤→青 の違いです。</figcaption>
+<figcaption><strong>図3.</strong> 正則化の効果。 同じ M=9 の多項式でも、 罰金（正則化）が無いと データに過剰反応して激しく振動するが（赤）、 罰金を入れると 係数の暴走が抑えられ なめらかな曲線になる（青）。 §1.4 の表で見た「$w_9$ が12万→72.68」が、 まさにこの 赤→青 の違いです。</figcaption>
 </figure>
 
 <div class="callout exercise">
@@ -711,9 +716,9 @@ $$E[f] = \int p(x) f(x)\, dx, \qquad \mathrm{var}[f] = E[f^2] - (E[f])^2, \qquad
 <p>これがそのまま<strong>演習 1.5</strong> の内容。</p>
 </div>
 
-<figure class="figure" id="fig3">
+<figure class="figure" id="fig4">
 <img src="figs/fig9_covariance.svg" alt="正・ゼロ・負の共分散を散布図で比較">
-<figcaption><strong>図3.</strong> 共分散の符号。 左: 正（一方が大なら他方も大。 例: 身長と体重）。 中: ほぼ0（無関係）。 右: 負（一方が大なら他方は小。 例: 気温とカイロ売上）。 共分散は「2変数が同じ向きに動くか逆か」を表します。</figcaption>
+<figcaption><strong>図4.</strong> 共分散の符号。 左: 正（一方が大なら他方も大。 例: 身長と体重）。 中: ほぼ0（無関係）。 右: 負（一方が大なら他方は小。 例: 気温とカイロ売上）。 共分散は「2変数が同じ向きに動くか逆か」を表します。</figcaption>
 </figure>
 
 <h2 id="sec3">3. §1.2.3 ベイズ的確率</h2>
@@ -748,9 +753,9 @@ $$\underbrace{p(\mathbf{w}\mid \mathcal{D})}_{\text{事後}} \;=\; \frac{\overbr
 <p>いっぽうベイズは「コインなんてだいたい半々だろう」という ゆるい事前を持っておくので、 3回表を見たあとでも<strong>穏当な値</strong>に落ち着きます。 たとえば「最初はどの確率も等しくありえる」という一様な事前を使うと、 計算上 表の確率は $(3+1)/(3+2) = 4/5 = 0.8$（ラプラスの継起則）。 「1」と断言せず「0.8 くらいかな」と踏みとどまる。 これが「少ないデータでは事前が効き、 データが増えると事前は薄れて 最尤推定に近づく」という話の 具体的な姿です。</p>
 </div>
 
-<figure class="figure" id="fig4">
+<figure class="figure" id="fig5">
 <img src="figs/fig14_bayes_update.svg" alt="コイン3回表後のベイズ事後分布。最尤はp=1、事後平均は0.8">
-<figcaption><strong>図4.</strong> ベイズ更新。 「表が出る確率 p」について、 観測前は一様（青、 どの値もありうる）。 表3回を見た後の事後（赤）は p=1 寄りに動くが、 最尤のように「p=1」と断言はせず、 平均は 0.8（ラプラスの継起則）に踏みとどまります。</figcaption>
+<figcaption><strong>図5.</strong> ベイズ更新。 「表が出る確率 p」について、 観測前は一様（青、 どの値もありうる）。 表3回を見た後の事後（赤）は p=1 寄りに動くが、 最尤のように「p=1」と断言はせず、 平均は 0.8（ラプラスの継起則）に踏みとどまります。</figcaption>
 </figure>
 
 <h3 id="ss-3-5">3.5 Cox の定理 — ベイズが「論理の拡張」である根拠</h3>
@@ -810,9 +815,9 @@ $
 <p>参考: <a href="https://ja.wikipedia.org/wiki/%E3%82%AC%E3%82%A6%E3%82%B9%E7%A9%8D%E5%88%86">ガウス積分(Wikipedia)</a> / <a href="https://k-san.link/gaussian-integral/">k-san.link</a></p>
 </div>
 
-<figure class="figure" id="fig5">
+<figure class="figure" id="fig6">
 <img src="figs/fig8_gaussian_shapes.svg" alt="μを変えると山が動き、σを変えると山の幅が変わる">
-<figcaption><strong>図5.</strong> ガウス分布の2つのつまみ。 左: μ（平均）を変えると 山が左右に動く。 右: σ（標準偏差）を変えると 山の幅が変わる（小さいほど尖り、 大きいほど なだらか）。</figcaption>
+<figcaption><strong>図6.</strong> ガウス分布の2つのつまみ。 左: μ（平均）を変えると 山が左右に動く。 右: σ（標準偏差）を変えると 山の幅が変わる（小さいほど尖り、 大きいほど なだらか）。</figcaption>
 </figure>
 
 <h3 id="ss-4-2">4.2 平均・分散（式 1.49, 1.50）</h3>
@@ -853,9 +858,9 @@ $$E[x] = \int x\,\mathcal{N}(x\mid \mu, \sigma^2)\, dx = \mu, \qquad \mathrm{var
 <p class="muted">極端例: $N=1$ なら $\mu_{\text{ML}}=x_1$, $\sigma^2_{\text{ML}}=0$ になります。1点では散らばりが定義不能で「ゼロ分散」になる、と思えばバイアスの方向が直感的。</p>
 </div>
 
-<figure class="figure" id="fig6">
+<figure class="figure" id="fig7">
 <img src="figs/fig6_mle_bias.svg" alt="MLE μ は不偏、σ² はバイアスを持つことを N=2 でのシミュレーションで示す">
-<figcaption><strong>図6.</strong> $\mu = 0,\ \sigma^2 = 1,\ N = 2$ で 30000 回シミュレーション。 $\mu_{\text{ML}}$ は不偏 (左、真値 0 に中央が一致)、一方 $\sigma^2_{\text{ML}}$ は<strong>過小評価</strong> (右、 N=2 の理論値 $(N-1)/N \cdot \sigma^2 = 0.5$ に一致)。 $N$ が小さいほどバイアスが目立つ。</figcaption>
+<figcaption><strong>図7.</strong> $\mu = 0,\ \sigma^2 = 1,\ N = 2$ で 30000 回シミュレーション。 $\mu_{\text{ML}}$ は不偏 (左、真値 0 に中央が一致)、一方 $\sigma^2_{\text{ML}}$ は<strong>過小評価</strong> (右、 N=2 の理論値 $(N-1)/N \cdot \sigma^2 = 0.5$ に一致)。 $N$ が小さいほどバイアスが目立つ。</figcaption>
 </figure>
 
 <p class="muted">参考: <a href="https://qiita.com/Alreschas/items/b1dd6f65a2c2bcec8d26">Qiita PRML図1.15 ガウス最尤バイアス</a> / <a href="https://pystyle.info/statistics-mle-and-bias-of-normal-distribution/">pystyle 正規分布MLEとバイアス</a></p>
@@ -920,9 +925,9 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
 <p>$$p(t\mid x, \mathbf{w}, \beta) = \mathcal{N}(t\mid y(x, \mathbf{w}), \beta^{-1})$$</p>
 <p>この式の<strong>意味</strong>を絵にしたのが下の図です。 「各 $x$ で、 出力 $t$ は <strong>曲線 $y(x,\mathbf{w})$ を中心に、 ガウス（正規分布）で散らばる</strong>」。 つまり曲線の上に、 各 $x$ ごとに小さなベル（釣鐘）が乗っていて、 データはそのベルから生まれる、 というモデルです。 $\beta^{-1}$ がベルの幅（ノイズの大きさ）。</p>
 
-<figure class="figure" id="fig7">
+<figure class="figure" id="fig8">
 <img src="figs/fig15_noise_model.svg" alt="回帰曲線の上に各xでガウスのベルが乗り、データがそこから散らばる図">
-<figcaption><strong>図7.</strong> ノイズモデル $p(t\mid x,\mathbf{w},\beta) = \mathcal{N}(t\mid y(x,\mathbf{w}),\beta^{-1})$ の意味。 各 $x$ で、 曲線 $y(x,\mathbf{w})$（青）を中心に $t$ がガウス（赤いベル）で散らばり、 観測データはそこから生まれる。 ベルの幅が $\beta^{-1}$（ノイズの大きさ）。 この「曲線＋各点のベル」が、 最初のモデル式の正体です。</figcaption>
+<figcaption><strong>図8.</strong> ノイズモデル $p(t\mid x,\mathbf{w},\beta) = \mathcal{N}(t\mid y(x,\mathbf{w}),\beta^{-1})$ の意味。 各 $x$ で、 曲線 $y(x,\mathbf{w})$（青）を中心に $t$ がガウス（赤いベル）で散らばり、 観測データはそこから生まれる。 ベルの幅が $\beta^{-1}$（ノイズの大きさ）。 この「曲線＋各点のベル」が、 最初のモデル式の正体です。</figcaption>
 </figure>
 
 <div class="callout key">
@@ -973,9 +978,9 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
 <p>$\mathbf{w}$ がベクトルなのに $\beta$ が1つの数なのは、 <strong>2つが表すものが違う</strong>からです。</p>
 <ul>
   <li><strong>$\mathbf{w}$ = 曲線の「形」</strong>。 $M$ 次多項式 $y = w_0 + w_1 x + \cdots + w_M x^M$ は、 $M{+}1$ 個の係数で 形が決まります。 形を表すには たくさんの数が要る ⇒ $\mathbf{w}$ は $M{+}1$ 次元の<strong>ベクトル</strong>。</li>
-  <li><strong>$\beta$ = ノイズの「大きさ」</strong>。 <a href="#fig7">図7</a>の赤いベルの<strong>幅</strong>のことです。 このモデルは「どのデータ点でも ノイズの大きさは同じ」（$\varepsilon_n \sim \mathcal{N}(0, \beta^{-1})$ が 全ての $n$ で<strong>共通の $\beta$</strong>）と仮定しています。 だから 見積もる雑音レベルは <strong>たった1つ</strong> ⇒ $\beta$ は<strong>スカラー</strong>。</li>
+  <li><strong>$\beta$ = ノイズの「大きさ」</strong>。 <a href="#fig8">図8</a>の赤いベルの<strong>幅</strong>のことです。 このモデルは「どのデータ点でも ノイズの大きさは同じ」（$\varepsilon_n \sim \mathcal{N}(0, \beta^{-1})$ が 全ての $n$ で<strong>共通の $\beta$</strong>）と仮定しています。 だから 見積もる雑音レベルは <strong>たった1つ</strong> ⇒ $\beta$ は<strong>スカラー</strong>。</li>
 </ul>
-<p>ひとことで: <strong>中心（曲線）は たくさんの数で形を作る → ベクトル $\mathbf{w}$。 散らばり（ベルの幅）は どこでも同じ1つの数で足りる → スカラー $\beta$。</strong> <a href="#fig7">図7</a> で言えば、 青い曲線をくねらせるのが $\mathbf{w}$、 赤いベルの太さを決めるのが $\beta$ です。</p>
+<p>ひとことで: <strong>中心（曲線）は たくさんの数で形を作る → ベクトル $\mathbf{w}$。 散らばり（ベルの幅）は どこでも同じ1つの数で足りる → スカラー $\beta$。</strong> <a href="#fig8">図8</a> で言えば、 青い曲線をくねらせるのが $\mathbf{w}$、 赤いベルの太さを決めるのが $\beta$ です。</p>
 <p class="muted">補足: もし「点ごとに ノイズの大きさが違う」設定（heteroscedastic）にすれば $\beta$ も点ごと＝複数になりますが、 第1章は<strong>全点 共通ノイズ</strong>を仮定するので $\beta$ は1個です。 なお $\beta_{\text{ML}}^{-1}$ の式は N 個の残差を<strong>1つの数に平均</strong>している点からも「全点を代表する1つの雑音レベル」だと読めます。</p>
 </div>
 <p>かみくだくと、<strong>「決めた1本の曲線のまわりに、 どこに行っても同じ幅 $\beta_{\text{ML}}^{-1}$ の誤差バーをつけたもの」</strong>。 天気予報でいえば「明日も明後日も1年後も、 ずっと同じ『±3℃』で予報します」と言っているような状態。 この『どこでも同じ幅』が後で問題になります（<a href="#ss-5-3">§5.3</a> でフルベイズと比べます）。</p>
@@ -1046,7 +1051,7 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
   <li><strong>MLE / MAP（1本の曲線）</strong>: データ付近と同じ「±0.2」みたいな <strong>同じ幅の誤差</strong>を、 データの無い $x=0.9$ でも 平気で出す。 「知らない場所なのに自信満々」で危険。</li>
   <li><strong>フルベイズ（曲線の群れ）</strong>: データ付近では 群れの意見が一致するので 誤差は小さい。 でも $x=0.9$ では 残った曲線たちの予測が バラバラに散る ので、 誤差が「±0.7」のように<strong>自動的に広がる</strong>。 「ここは知らないから自信ない」と 正直に言える。</li>
 </ul>
-<p>この「データから離れると誤差が広がる」性質こそ、 フルベイズが MLE/MAP に勝る最大のポイントです（この節の最後の<strong><a href="#fig8">図8</a></strong>が、 まさにこの様子を描いています）。</p>
+<p>この「データから離れると誤差が広がる」性質こそ、 フルベイズが MLE/MAP に勝る最大のポイントです（この節の最後の<strong><a href="#fig9">図9</a></strong>が、 まさにこの様子を描いています）。</p>
 </div>
 
 <p>では式で。 ベストな $\mathbf{w}$ を1個選ぶのではなく、 ありうる $\mathbf{w}$ を<strong>すべて</strong>、 その確からしさ $p(\mathbf{w}\mid \mathbf{x},\mathbf{t})$ で重みづけて 足し合わせ（積分し）ます:</p>
@@ -1062,12 +1067,12 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
   <li>第1項 $\beta^{-1}$ = データ生成時のノイズ。 これは MLE 予測 (1.64) も持っているもので、データを増やしても消えない</li>
   <li>第2項 = $\mathbf{w}$ の不確実性が予測に反映された分。 <strong>$x$ に依存</strong>し、訓練データから離れた $x$ で大きくなる ⇒ 「自信がない」と言える。 <strong>さっきの例で $x=0.9$ で誤差が広がった正体が、 この第2項です。</strong></li>
 </ul>
-<p>第1項だけ（=MLE/MAP）だと、 誤差バーは どこでも同じ幅 $\beta^{-1}$。 だから「データから離れた領域でも自信満々」という困った振る舞いになる。 第2項が加わって はじめて「知らない場所では誤差が広がる」正直な予測になります（下の<a href="#fig8">図8</a>）。</p>
+<p>第1項だけ（=MLE/MAP）だと、 誤差バーは どこでも同じ幅 $\beta^{-1}$。 だから「データから離れた領域でも自信満々」という困った振る舞いになる。 第2項が加わって はじめて「知らない場所では誤差が広がる」正直な予測になります（下の<a href="#fig9">図9</a>）。</p>
 </div>
 
-<figure class="figure" id="fig8">
+<figure class="figure" id="fig9">
 <img src="figs/fig7_bayes_predictive.svg" alt="ベイズ予測分布: データのある左側では誤差の帯が細く、データの無い右側で帯が広がる">
-<figcaption><strong>図8.</strong> ベイズ予測分布の実例（多項式基底で予測平均 $m(x)$ と不確実性帯 $\pm s(x)$ を厳密計算）。 データは $x \le 0.6$ に偏在。 <strong>データのある左側では帯が細く（自信あり）、 データの無い右側では帯が自動的に広がる（自信なし）</strong>。 MLE/MAP なら この帯は どこでも同じ幅 $\beta^{-1}$ のまま — これがフルベイズとの決定的な違い。 （PRML 図1.17 に対応）</figcaption>
+<figcaption><strong>図9.</strong> ベイズ予測分布の実例（多項式基底で予測平均 $m(x)$ と不確実性帯 $\pm s(x)$ を厳密計算）。 データは $x \le 0.6$ に偏在。 <strong>データのある左側では帯が細く（自信あり）、 データの無い右側では帯が自動的に広がる（自信なし）</strong>。 MLE/MAP なら この帯は どこでも同じ幅 $\beta^{-1}$ のまま — これがフルベイズとの決定的な違い。 （PRML 図1.17 に対応）</figcaption>
 </figure>
 
 <p class="muted">「閉じる」のは、指数の肩がすべて $\mathbf{w}$ の二次形式 → 和も二次形式 → 平方完成でガウスに戻るから（詳しくは §2.3.3 で再訪、式 2.116）。 なお $\alpha, \beta$ のようなモデルパラメータの分布を制御するパラメータを<strong>ハイパーパラメータ</strong>と呼びます (§3.5 で経験ベイズ的にデータから推定する手法を扱う)。</p>
@@ -1094,9 +1099,9 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
 </div>
 <p><strong>欠点</strong>: 学習を $K$ 倍に増やすため計算重い。 さらに複数ハイパラ (例: $\lambda$ と $M$ の両方) を一緒に探索すると組合せ爆発で実用困難（PRML p.33）。</p>
 
-<figure class="figure" id="fig9">
+<figure class="figure" id="fig10">
 <img src="figs/fig11_kfold.svg" alt="5-fold交差検証: 各回ちがうブロックを検証に使う図">
-<figcaption><strong>図9.</strong> 5-fold 交差検証。 データを5ブロックに分け、 毎回ちがう1ブロック（オレンジ）を検証に、 残り4ブロック（青）を学習に使う。 これを5回くり返して 検証誤差を平均します。</figcaption>
+<figcaption><strong>図10.</strong> 5-fold 交差検証。 データを5ブロックに分け、 毎回ちがう1ブロック（オレンジ）を検証に、 残り4ブロック（青）を学習に使う。 これを5回くり返して 検証誤差を平均します。</figcaption>
 </figure>
 
 <h3 id="ss-6-2">6.2 情報量規準</h3>
@@ -1134,9 +1139,9 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
 </table>
 <p class="muted">「シェル」と「皮」は同じものを指します（厚さ $1-r$ の外側帯）。</p>
 
-<figure class="figure" id="fig10">
+<figure class="figure" id="fig11">
 <img src="figs/fig2_curse_cube.svg" alt="D次元立方体: シェル内体積割合が D とともに 1 に収束">
-<figcaption><strong>図10.</strong> D次元立方体の「厚さ $\varepsilon$ のシェル」に含まれる体積割合 $1 - (1-\varepsilon)^D$。たとえ $\varepsilon = 0.01$ (内側 99% の立方体) でも、D = 100 では体積の 63% が皮に。</figcaption>
+<figcaption><strong>図11.</strong> D次元立方体の「厚さ $\varepsilon$ のシェル」に含まれる体積割合 $1 - (1-\varepsilon)^D$。たとえ $\varepsilon = 0.01$ (内側 99% の立方体) でも、D = 100 では体積の 63% が皮に。</figcaption>
 </figure>
 
 <h4>(b) 球: 体積も表面近くに集中</h4>
@@ -1175,9 +1180,9 @@ $$E[x_n x_m] = \mu^2 + I_{nm}\, \sigma^2 \quad (1.130)$$
 <p>つまり高次元ガウスは <strong>$\sigma\sqrt{D}$ 付近の薄い球殻に集中</strong> しています (中心ではない)。これがガウスにすら効く「次元の呪い」。</p>
 </div>
 
-<figure class="figure" id="fig11">
+<figure class="figure" id="fig12">
 <img src="figs/fig3_highdim_gaussian.svg" alt="高次元ガウス N(0, I) の半径方向密度 p(r): D=1 では原点付近にピーク、D=100 では √99 付近の球殻にピークが移る">
-<figcaption><strong>図11.</strong> <strong>標準ガウス $\mathcal{N}(\mathbf{0}, \mathbf{I})$（$\sigma=1$ の場合）</strong>の半径方向密度 $p(r) \propto r^{D-1} e^{-r^2/2}$。 $D$ が大きくなるとピークが原点から離れ、$\hat{r} = \sqrt{D-1}$ の球殻に質量が集中する (各曲線はピーク値で正規化)。一般の $\sigma$ では $\hat{r} = \sigma\sqrt{D-1}$。</figcaption>
+<figcaption><strong>図12.</strong> <strong>標準ガウス $\mathcal{N}(\mathbf{0}, \mathbf{I})$（$\sigma=1$ の場合）</strong>の半径方向密度 $p(r) \propto r^{D-1} e^{-r^2/2}$。 $D$ が大きくなるとピークが原点から離れ、$\hat{r} = \sqrt{D-1}$ の球殻に質量が集中する (各曲線はピーク値で正規化)。一般の $\sigma$ では $\hat{r} = \sigma\sqrt{D-1}$。</figcaption>
 </figure>
 
 <h3 id="ss-7-2">7.2 機械学習における意味</h3>
@@ -1285,7 +1290,7 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
   <li>§1.5.1 <strong>最小誤分類率</strong>: 最大事後確率 $\arg\max_k p(\mathcal{C}_k\mid x)$ を選ぶ。 誤分類確率は決定領域 $\mathcal{R}_1, \mathcal{R}_2$ 上の積分で表せる (式 1.78):
     $$p(\text{mistake}) = \int_{\mathcal{R}_1} p(x, \mathcal{C}_2)\, dx + \int_{\mathcal{R}_2} p(x, \mathcal{C}_1)\, dx$$
     境界 $x_0$ を「$p(x, \mathcal{C}_1) = p(x, \mathcal{C}_2)$」になる点に置くと、 誤分類が最小。
-    <span class="muted">（本がなくても分かるように言うと: 2つのクラスの分布は ふつう 少し重なっています。 誤分類の確率は その「重なった部分の面積」。 境界を 2本の曲線が交わる点に置くと、 取りこぼす面積が最小になる、 というのが PRML 図1.24 の主張です）</span></li>
+    <span class="muted">（本がなくても分かるように言うと: 2つのクラスの分布は ふつう 少し重なっています。 誤分類の確率は その「重なった部分の面積」。 境界を 2本の曲線が交わる点に置くと、 取りこぼす面積が最小になる、 というのが <a href="#fig13">図13</a> の中身です（PRML 図1.24 に相当））</span></li>
   <li>§1.5.2 <strong>最小期待損失</strong>: 損失行列 $L_{kj}$ (真のクラス $k$ を $j$ と判定する損失) を入れ、$\sum_k L_{kj} p(\mathcal{C}_k\mid x)$ を最小化 (式 1.80)。 例: ガン検診で「ガンを見落とす」損失を「健康者を疑う」損失より大きく設定</li>
   <li>§1.5.3 <strong>棄却オプション</strong>: 事後確率の最大値が閾値 $\theta$ 未満なら判定しない (式 1.83)。 $\theta = 1$ で全棄却、 $K$ クラスでは $\theta < 1/K$ で棄却ゼロ (演習 1.24)</li>
   <li>§1.5.4 <strong>生成 vs 識別 vs 判別関数</strong>: 後述（次節で4つの理由を詳述）</li>
@@ -1305,7 +1310,7 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
   <li>$x$ が $\mathcal{R}_2$ に来た（＝<strong>C2 と判定した</strong>）のに、 本当は <strong>C1</strong> だった → $\displaystyle\int_{\mathcal{R}_2} p(x, \mathcal{C}_1)\, dx$。</li>
 </ul>
 <p>この2つを足したのが式 1.78。 つまり <strong>「判定した先」と「本当のクラス」が食い違う確率の合計</strong>です。 記号 $\int_{\mathcal{R}_1}$ は「領域 $\mathcal{R}_1$ に入る $x$ を ぜんぶ足し上げる（積分する）」という意味。</p>
-<p><strong>図12（下）で見ると一目瞭然</strong>: 横軸 $x$ に 青 $p(x,\mathcal{C}_1)$ と 赤 $p(x,\mathcal{C}_2)$ の2曲線。 境界 $x_0$ の<strong>左</strong>（$\mathcal{R}_1$）にある<strong>赤の裾</strong>（本当はC2なのにC1判定）と、 <strong>右</strong>（$\mathcal{R}_2$）にある<strong>青の裾</strong>（本当はC1なのにC2判定）の<strong>合計面積（灰色）</strong>が p(mistake)。 境界を<strong>2曲線の交点</strong>に置くと、 各 $x$ で「背の高いほうのクラス」を選ぶことになり、 はみ出す面積（＝間違い）が最小になります。</p>
+<p><strong>図13（下）で見ると一目瞭然</strong>: 横軸 $x$ に 青 $p(x,\mathcal{C}_1)$ と 赤 $p(x,\mathcal{C}_2)$ の2曲線。 境界 $x_0$ の<strong>左</strong>（$\mathcal{R}_1$）にある<strong>赤の裾</strong>（本当はC2なのにC1判定）と、 <strong>右</strong>（$\mathcal{R}_2$）にある<strong>青の裾</strong>（本当はC1なのにC2判定）の<strong>合計面積（灰色）</strong>が p(mistake)。 境界を<strong>2曲線の交点</strong>に置くと、 各 $x$ で「背の高いほうのクラス」を選ぶことになり、 はみ出す面積（＝間違い）が最小になります。</p>
 <p class="muted">補足: $p(x,\mathcal{C}_k)$ は <a href="#ss-2-1">§2.1</a> の同時確率で、 $p(\mathcal{C}_k|x)\,p(x)$ とも書けます。 だから「同時確率が大きいほう」を選ぶのは「事後確率 $p(\mathcal{C}_k|x)$ が大きいほう」を選ぶのと同じ（$p(x)$ は両クラス共通なので）。 これが §1.5.1「最大事後確率を選べば誤分類最小」の中身です。</p>
 </div>
 
@@ -1344,9 +1349,9 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
 
 <p class="muted"><strong>棄却オプションの具体例</strong>: 「$\max_k p(\mathcal{C}_k|x) < 0.9$ なら 自動判定せず 医師に回す」。 自信のある（事後確率が高い）ケースだけ機械が判定し、 際どいケースは人間に委ねる仕組み。 閾値 $\theta$ を上げるほど 棄却（保留）は増えますが、 自動判定した分の精度は上がります。</p>
 
-<figure class="figure" id="fig12">
+<figure class="figure" id="fig13">
 <img src="figs/fig12_decision_boundary.svg" alt="2クラスの分布の重なりと最適決定境界、誤分類領域">
-<figcaption><strong>図12.</strong> 最小誤分類の決定境界。 2クラスの分布（青・赤）は ふつう少し重なります。 誤分類の確率は その「重なりの面積」（灰色）で、 境界を 2曲線の交点に置くと この面積が最小に。 これが PRML 図1.24 の内容です。</figcaption>
+<figcaption><strong>図13.</strong> 最小誤分類の決定境界。 2クラスの分布（青・赤）は ふつう少し重なります。 誤分類の確率は その「重なりの面積」（灰色）で、 境界を 2曲線の交点に置くと この面積が最小に。 （PRML 図1.24 に相当）。</figcaption>
 </figure>
 
 <h3 id="ss-8-3">8.3 §1.5.4 推論と決定 — 「なぜ事後確率を計算する価値があるか」(輪読頻出)</h3>
@@ -1437,9 +1442,9 @@ $$p(r) = \frac{S_D\, r^{D-1}}{(2\pi\sigma^2)^{D/2}} \exp\!\left(-\frac{r^2}{2\si
 <p>これが「二乗損失($q=2$)は外れ値に弱く、 絶対損失($q=1$)は頑健」の正体です。 二乗は ズレを 2乗するので、 遠い1点が 効きすぎる。 最適な $y(x)$ が「平均か、 中央値か、 最頻値か」は 損失の形 $q$ しだいで変わる、 というのが 演習1.27 のメッセージです。</p>
 </div>
 
-<figure class="figure" id="fig13">
+<figure class="figure" id="fig14">
 <img src="figs/fig4_lq_loss.svg" alt="Lq損失の形状 q=0.3, 1, 2, 4">
-<figcaption><strong>図13.</strong> Lq損失 $|y(x) - t|^q$ の形状。q=2 では誤差を二乗 (平均二乗誤差)、 q=1 では絶対誤差で外れ値耐性、 q→0 ではほぼ階段関数で最頻値が最適、 q が大きいと外れ値に過敏に。</figcaption>
+<figcaption><strong>図14.</strong> Lq損失 $|y(x) - t|^q$ の形状。q=2 では誤差を二乗 (平均二乗誤差)、 q=1 では絶対誤差で外れ値耐性、 q→0 ではほぼ階段関数で最頻値が最適、 q が大きいと外れ値に過敏に。</figcaption>
 </figure>
 
 <div class="callout key">
@@ -1558,12 +1563,12 @@ $$E[L_q] = \int\!\!\int |y(x) - t|^q\, p(x,t)\, dx\, dt$$
 <p>$$H = -\tfrac{1}{2} \ln \tfrac{1}{2} - \tfrac{1}{2} \ln \tfrac{1}{2} = \ln 2 \approx 0.693 \text{ ナット}$$</p>
 <p><strong>偏ったコイン</strong> ($p=0.9$):</p>
 <p>$$H = -0.9 \ln 0.9 - 0.1 \ln 0.1 \approx 0.095 + 0.230 = 0.325 \text{ ナット}$$</p>
-<p>偏ったコインの方は「ほぼ表」と予測できるので<strong>驚きの期待値が小さい</strong>。公平なコインは予測しづらいのでエントロピー最大。 <a href="#fig14">図14</a> のグラフがこの関係をなめらかに描いています。</p>
+<p>偏ったコインの方は「ほぼ表」と予測できるので<strong>驚きの期待値が小さい</strong>。公平なコインは予測しづらいのでエントロピー最大。 <a href="#fig15">図15</a> のグラフがこの関係をなめらかに描いています。</p>
 </div>
 
-<figure class="figure" id="fig14">
+<figure class="figure" id="fig15">
 <img src="figs/fig5_binary_entropy.svg" alt="バイナリエントロピー H(p) = -p log p - (1-p) log(1-p)">
-<figcaption><strong>図14.</strong> バイナリエントロピー。 $p=0$ または $p=1$ なら結果は完全に予測でき $H=0$。 $p=1/2$ で最大値 $\ln 2$。</figcaption>
+<figcaption><strong>図15.</strong> バイナリエントロピー。 $p=0$ または $p=1$ なら結果は完全に予測でき $H=0$。 $p=1/2$ で最大値 $\ln 2$。</figcaption>
 </figure>
 
 <h3 id="ss-9-2">9.2 ガウスのエントロピー（演習 1.35）</h3>
@@ -1772,9 +1777,9 @@ $$H[x] = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\} \quad (1.110)$$
 <p>たとえば $x$＝「今日は雨か」、 $y$＝「道行く人が 傘を持っているか」。 雨の日は ほぼ全員 傘を持ち、 晴れの日は ほぼ持たない、 という強い関係があるなら、 <strong>天気 $x$ を知るだけで 傘 $y$ が ほぼ読める</strong> → $H[y|x]$ がぐっと小さくなり → $I$ は大きい。 逆に $x$＝「サイコロの目」と $y$＝「傘」のように 無関係なら、 $x$ を知っても $y$ の予想は 1ミリも 良くならない → $H[y|x] = H[y]$ → $I = 0$。 つまり <strong>$I = 0$ は「独立（知っても無意味）」と完全に同じ意味</strong>です。</p>
 </div>
 
-<figure class="figure" id="fig15">
+<figure class="figure" id="fig16">
 <img src="figs/fig13_mutual_info.svg" alt="相互情報量のベン図: H[x]とH[y]の重なりがI[x,y]">
-<figcaption><strong>図15.</strong> 相互情報量のベン図。 $H[x]$ と $H[y]$ を2つの円とすると、 重なりが 相互情報量 $I[x,y]$、 重ならない部分が それぞれ条件付きエントロピー $H[x|y]$, $H[y|x]$。 円の合併全体が 同時エントロピー $H[x,y]$。 独立なら 重なり（$I$）はゼロです。</figcaption>
+<figcaption><strong>図16.</strong> 相互情報量のベン図。 $H[x]$ と $H[y]$ を2つの円とすると、 重なりが 相互情報量 $I[x,y]$、 重ならない部分が それぞれ条件付きエントロピー $H[x|y]$, $H[y|x]$。 円の合併全体が 同時エントロピー $H[x,y]$。 独立なら 重なり（$I$）はゼロです。</figcaption>
 </figure>
 
 <div class="callout key">
