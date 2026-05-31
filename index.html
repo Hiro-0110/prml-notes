@@ -790,6 +790,12 @@ $$\underbrace{p(\mathbf{w}\mid \mathcal{D})}_{\text{事後}} \;=\; \frac{\overbr
 <p>$$\frac{\text{表}\ 3 + \overbrace{1}^{\text{偽の表}}}{(\text{表}\ 3 + 1) + (\text{裏}\ 0 + \underbrace{1}_{\text{偽の裏}})} = \frac{4}{5} = 0.8$$</p>
 <p>分子の $+1$ が「偽の表」、 分母の $+2$ が「偽の表 ＋ 偽の裏」。 この"水増し"のおかげで、 <strong>裏が1回も出ていなくても 裏の確率を 0 にしない</strong>（＝表を 1 と断言しない）。 一般化すると、 $N$ 回中 $m$ 回 表なら「次が表」の確率は $\dfrac{m+1}{N+2}$ ＝<strong>ラプラスの継起則</strong>。</p>
 <p class="muted"><strong>ちゃんと計算すると（任意）</strong>: 表の確率を $\mu$ とおくと、 一様な事前は $p(\mu)=1$、 表3回の尤度は $p(\text{データ}\mid\mu)=\mu^3$。 事後は $p(\mu\mid\text{データ})\propto \mu^3$（規格化して $4\mu^3$）。 「次が表」の確率は、 この事後で $\mu$ を平均した値: $\displaystyle\int_0^1 \mu\cdot 4\mu^3\,d\mu = 4\cdot\tfrac{1}{5} = \tfrac{4}{5}$。 ＝<strong>事後分布の平均（重心）</strong>で、 図5 の赤い分布の重心が ちょうど 0.8 にあたります。</p>
+<p><strong>そう、これは まさに ベイズ則です。</strong> ラプラスの継起則は「新しい別の規則」ではなく、 <a href="#ss-3-2">§3.2</a> のベイズ則 <strong>事後 ∝ 尤度 × 事前</strong> を、 一様事前＋コインに当てはめた<strong>結果</strong>に 名前が付いただけ。 中身は2段階です:</p>
+<ol>
+  <li><strong>ベイズ則</strong>で 事後を出す: $\overbrace{p(\mu|\text{データ})}^{\text{事後}} \propto \overbrace{\mu^3}^{\text{尤度}}\cdot\overbrace{1}^{\text{事前}}$。 これで μ についての<strong>分布</strong>（$4\mu^3$）が得られる。</li>
+  <li><strong>予測</strong>に直す: 「次が表」は 1つの数が欲しいので、 事後で μ を<strong>平均</strong>（積分で消去）して $\int \mu\, p(\mu|\text{データ})\,d\mu = 0.8$。 これは <a href="#ss-5-3">§5.3</a> のフルベイズ予測（パラメータを積分消去）と同じ発想。</li>
+</ol>
+<p>つまり <strong>「ラプラスの継起則」＝「ベイズ則（で事後）＋ 事後平均（で予測）」</strong>。 そして 例の「+1 ずつ」の水増しは、 この計算の<strong>algebraショートカット</strong>（一様事前 Beta(1,1) ＋ コインの尤度 だと 答えが $\frac{m+1}{N+2}$ になる、という結果）です。 だから あなたの「これってベイズ則じゃないの？」は<strong>大正解</strong>。</p>
 </div>
 </div>
 
