@@ -591,6 +591,17 @@ $$\sum_{j=0}^M A_{ij}\, w_j = T_i \quad (1.122)$$
 <span class="slabel">完全解答</span>
 <p><strong>方針</strong>: 二乗和誤差 $E(\mathbf{w})$ を $w_i$ で偏微分してゼロと置き、 各 $w_j$ について線形な連立方程式に整理する。</p>
 
+<div class="callout gap">
+<span class="label">先に「添字の地図」— これさえ押さえれば 添字に溺れない</span>
+<p>この問題は 添字が <strong>3種類</strong>出てきて 混乱しがちです。 まず それぞれが「<strong>何の番号か</strong>」を はっきりさせましょう:</p>
+<ul>
+  <li><strong>$n$ ＝ データ点の番号</strong>（$1, 2, \ldots, N$）。 $x_n$ は $n$番目の入力、 $t_n$ は $n$番目の正解。 <strong>$\sum_n$ は「全データ点について足す」</strong>（誤差を 全点で合計）。</li>
+  <li><strong>$j$ ＝ べき（項）の番号</strong>（$0, 1, \ldots, M$）。 $w_j$ は $x^j$ の係数。 <strong>$\sum_j w_j x^j$ は『多項式そのもの』</strong>（$w_0 + w_1 x + \cdots + w_M x^M$ を 項ごとに足す）。</li>
+  <li><strong>$i$ ＝ いま微分する係数の番号</strong>（$0, 1, \ldots, M$）。 <strong>$w_i$ で微分</strong>＝「$i$番目の係数を ちょっと動かすと $E$ がどう変わるか」。 $i$ を $0$ から $M$ まで動かすので、 方程式が <strong>$M+1$ 本</strong>できます。</li>
+</ul>
+<p><strong>イメージ</strong>: $n$ は<strong>「横」（データ点をまたぐ方向）</strong>、 $i, j$ は<strong>「縦」（係数をまたぐ方向）</strong>の番号、 と思うと混ざりません。 $\sum_n$ と $\sum_j$ は<strong>まったく別のもの</strong>を足しています。 そして $i$ と $j$ が<strong>2つある</strong>のは役割が違うから ——<strong>$j$＝多項式を作る"走る"番号、 $i$＝いま微分している"固定の相手"</strong>。 Step 2 で「$j = i$ の項だけ 生き残る」のが この2つの出会う瞬間です。</p>
+</div>
+
 <p><span class="step">Step 1.</span> 連鎖律で外側の2乗を外す。</p>
 <p>$E(\mathbf{w}) = \tfrac{1}{2}\sum_n \{y(x_n,\mathbf{w}) - t_n\}^2$ で、$u_n := y(x_n,\mathbf{w}) - t_n$ とおくと外側微分は $2u_n$:</p>
 <p>$$\frac{\partial E}{\partial w_i} = \tfrac{1}{2} \sum_n 2 (y(x_n,\mathbf{w}) - t_n) \cdot \frac{\partial y(x_n,\mathbf{w})}{\partial w_i} = \sum_n (y(x_n,\mathbf{w}) - t_n)\cdot\frac{\partial y}{\partial w_i}$$</p>
@@ -608,6 +619,24 @@ $$\sum_{j=0}^M A_{ij}\, w_j = T_i \quad (1.122)$$
 <p><span class="step">結論.</span></p>
 <p>$$\boxed{\sum_{j=0}^{M} A_{ij}\, w_j = T_i \qquad (1.122)}$$</p>
 <p>これは $\mathbf{w}$ について $M+1$ 個の線形方程式で、行列形式では $\mathbf{w} = (\Phi^\top \Phi)^{-1} \Phi^\top \mathbf{t}$。 計画行列 $\Phi$ ($\Phi_{nj} = x_n^j$) を用いた擬逆行列の形で、後の式 (3.15) と同型 (§3 では基底 $\phi_j(x)$ を一般化)。</p>
+
+<div class="callout gap">
+<span class="label">具体例で つかむ: M=1（直線 $y = w_0 + w_1 x$）で 全部 書き下す</span>
+<p>添字が抽象的なので、 いちばん簡単な $M=1$（直線当てはめ）で 中身を 全部 具体化します。 係数は $w_0, w_1$ の2つだけ（$i, j \in \{0, 1\}$）。</p>
+<p><strong>$A_{ij} = \sum_n x_n^{\,i+j}$（入力のべきの合計）の 4成分:</strong></p>
+<ul>
+  <li>$A_{00} = \sum_n x_n^{0} = \sum_n 1 = N$（データ点の<strong>個数</strong>）</li>
+  <li>$A_{01} = A_{10} = \sum_n x_n^{1} = \sum_n x_n$（入力の<strong>合計</strong>）</li>
+  <li>$A_{11} = \sum_n x_n^{2}$（入力の2乗の合計）</li>
+</ul>
+<p><strong>$T_i = \sum_n x_n^{\,i}\, t_n$ は:</strong> $\ T_0 = \sum_n t_n$（正解の合計）、 $\ T_1 = \sum_n x_n t_n$。</p>
+<p><strong>連立方程式 $\sum_j A_{ij} w_j = T_i$ を $i = 0, 1$ で 書き下す</strong>と、 ただの $2\times 2$ の連立一次方程式:</p>
+<p>$$\begin{aligned}
+i = 0:\quad & N\, w_0 \;+\; \big(\textstyle\sum_n x_n\big)\, w_1 \;=\; \textstyle\sum_n t_n \\
+i = 1:\quad & \big(\textstyle\sum_n x_n\big)\, w_0 \;+\; \big(\textstyle\sum_n x_n^2\big)\, w_1 \;=\; \textstyle\sum_n x_n t_n
+\end{aligned}$$</p>
+<p>これは <strong>高校〜大学で習う「最小二乗法による直線フィット」の公式そのもの</strong>です。 つまり 一般の (1.122) は、 この見慣れた 2本の式を 任意の次数 $M$（$M+1$ 本）に拡張しただけ。 添字の正体も見えてきます: <strong>$A_{ij}$ は「入力のべきの合計を 縦横に並べた $(M{+}1)\times(M{+}1)$ の表（行列）」</strong>、 <strong>$T_i$ は「正解 $t_n$ に 入力のべき $x_n^i$ を掛けて足した 縦ベクトル」</strong>。 $i$ が行番号、 $j$ が列番号です。</p>
+</div>
 </div>
 </div>
 
