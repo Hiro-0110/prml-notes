@@ -1650,7 +1650,14 @@ $$H[x] = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\} \quad (1.110)$$
 <p>本題に戻って $f = -\ln, X = q(x)/p(x)$、 期待値は $p$ のもとで:</p>
 <p>$$E_p[-\ln(q/p)] \ge -\ln E_p[q/p] = -\ln \int p \cdot \frac{q}{p}\, dx = -\ln \int q\, dx = -\ln 1 = 0$$</p>
 <p>左辺がまさに $\mathrm{KL}(p\|q)$。 ∴ $\mathrm{KL}(p\|q) \ge 0$。</p>
-<p><strong>等号条件</strong>: $-\ln$ は<strong>狭義</strong>凸 (strictly convex) なので、 Jensen の等号 ⟺ $q/p$ が $p$-a.s. に定数 $c$。 さらに $\int q\, dx = \int p \cdot (q/p)\, dx = c \cdot 1 = c$、 一方 $\int q\, dx = 1$ なので $c = 1$。 ∴ $p = q$ ($p$-a.s.)。</p>
+<p><strong>等号条件（KL が ちょうど 0 になるのは いつか）</strong>: 「距離が 0 以上」だけでなく、 <strong>0 になるのは ぴったり $p=q$ のときだけ</strong>、 を示します（これが言えて はじめて KL が"違いの尺度"として機能する。 違うのに距離0、 では困る）。 3ステップ:</p>
+<ol>
+  <li><strong>狭義凸 → 等号は「ばらつきゼロ」のときだけ。</strong> $-\ln$ は<strong>狭義凸</strong>（strictly convex ＝ どこにも 平らな部分が無く、 常に曲がっている）。 こういう $f$ では、 Jensen $E[f(X)] \ge f(E[X])$ の<strong>等号が成り立つのは $X$ が定数（ばらつかない）ときだけ</strong>。 ↑の2点の例で言えば、 ギャップ（$5 > 4$）が出たのは $X$ が 1 と 3 に<strong>ばらついた</strong>から。 もし $X$ が いつも同じ値なら 等号になります。</li>
+  <li><strong>「$X$ が定数」を 今の場合に翻訳。</strong> 今は $X = q(x)/p(x)$（2つの分布の<strong>比</strong>）。 だから 等号 ⟺ <strong>比 $q(x)/p(x)$ が すべての $x$ で 同じ定数 $c$</strong>、 つまり $q(x) = c\,p(x)$。</li>
+  <li><strong>その定数 $c$ は 1 しかありえない。</strong> $q(x) = c\,p(x)$ の両辺を $x$ で積分すると $\int q\,dx = c\int p\,dx$。 ところが $p, q$ はどちらも確率分布なので $\int p\,dx = \int q\,dx = 1$。 よって $1 = c \cdot 1$ ⇒ $\boxed{c = 1}$。 すると $q(x) = 1\cdot p(x)$、 すなわち <strong>$p = q$</strong>。</li>
+</ol>
+<p>まとめ: <strong>$\mathrm{KL}(p\|q) = 0 \iff q/p$ が定数 $\iff$ （その定数は 1 なので）$p = q$</strong>。 「2つの分布が ぴったり同じときだけ 距離ゼロ」。 これで KL が"違いの大きさ"として 安心して使えます。</p>
+<p class="muted">注: 「$p$-a.s.（$p$-almost surely、 ほとんど至るところ）」は「確率ゼロの例外を除いて」という測度論の用語。 初学者は「実質 すべての $x$ で」と読んで差し支えありません。</p>
 </div>
 
 <h4 id="ss-9-3-5">KLと最尤推定の橋渡し（<a href="#eq-1-119">式 1.119</a>）</h4>
