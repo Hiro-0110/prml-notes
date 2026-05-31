@@ -1808,6 +1808,7 @@ $$H[x, y] \le H[x] + H[y] \quad (1.152)$$
 
 <p><span class="step">Step 3.</span> 等号条件 (両方向を示す)。</p>
 <p>「等号 $\Leftrightarrow$ 独立」を両方向で:</p>
+<p class="muted"><strong>なぜ両方向が要るのか</strong>: 問題が「等号が成り立つのは独立なとき、 <strong>かつ そのときに限る</strong>」（＝ <strong>iff・必要十分</strong>）を要求しているからです。 iff は「等号⇒独立」と「独立⇒等号」の<strong>2つの別々の主張</strong>で、 <strong>片方を示しても もう片方は自動では言えません</strong>（「雨が降る⇒地面が濡れる」は真でも、 逆の「地面が濡れる⇒雨」は偽＝水撒きかも、 のように 逆は別物）。 だから両方 示す必要があります。 ただし<strong>難易度は段違い</strong>: ($\Leftarrow$) は代入するだけの<strong>一瞬</strong>、 ($\Rightarrow$) が<strong>本番</strong>で、 ここで <a href="#ss-9-3">§9.3</a> の KL 等号条件（$-\ln$ が狭義凸 → KL$=0\iff$分布が一致）が効きます。</p>
 <ol>
   <li><strong>($\Leftarrow$) 独立 ⇒ 等号</strong>: $p(x,y) = p(x)p(y)$ なら定義から $\mathrm{KL}(p(x,y)\,\|\,p(x)p(y)) = \mathrm{KL}(p(x,y)\,\|\,p(x,y)) = 0$、 ゆえに $I = 0$、 ゆえに $H[x,y] = H[x] + H[y]$。</li>
   <li><strong>($\Rightarrow$) 等号 ⇒ 独立</strong>: $I[x,y] = 0$ なら $\mathrm{KL}(p(x,y)\,\|\,p(x)p(y)) = 0$。 KL の等号条件は (<a href="#ss-9-3">§9.3</a> で示したように $-\ln$ が狭義凸であることから) $p(x,y) = p(x)p(y)$ ($p$-a.s.)、 すなわち $x, y$ は独立。</li>
