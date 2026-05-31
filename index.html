@@ -1756,6 +1756,17 @@ $$H[x] = \tfrac{1}{2}\{1 + \ln(2\pi\sigma^2)\} \quad (1.110)$$
 <p>（「別々の不確実性の和」から「まとめた不確実性」を引いた"重なり"。 下のベン図がこれ。） そして $x$ と $y$ が独立 $\Longleftrightarrow$ $p(x,y) = p(x)p(y)$ $\Longleftrightarrow$ $I[x,y] = 0$。</p>
 
 <div class="callout gap">
+<span class="label">そもそも「$x$ と $y$ が独立」の定義は？</span>
+<p>独立の定義は <strong>たった1本の式</strong>:</p>
+<p>$$\boxed{\,p(x, y) = p(x)\,p(y)\,}\quad（\text{すべての } x, y \text{ で}）$$</p>
+<p>「<strong>同時分布が、 それぞれの分布の 単純な掛け算に分かれる</strong>」こと。 これと まったく同値な、 もっと直感的な言い換えが:</p>
+<p>$$p(y|x) = p(y) \qquad\big(\text{および}\ p(x|y) = p(x)\big)$$</p>
+<p>意味は <strong>「$x$ を知っても $y$ の分布が 変わらない」＝「片方を知っても もう片方について 何も分からない」</strong>。 これが独立のキモです。</p>
+<p class="muted">2式が同値な理由: product rule $p(x,y) = p(y|x)\,p(x)$ に $p(x,y)=p(x)p(y)$ を入れると $p(y|x)p(x) = p(x)p(y)$、 両辺を $p(x)$ で割って $p(y|x) = p(y)$。</p>
+<p><strong>例で</strong>: $x$＝天気、 $y$＝サイコロの目 なら、 天気を知っても 目の確率は変わらない（$p(\text{目}|\text{天気}) = p(\text{目})$）→ <strong>独立</strong>、 $I=0$。 いっぽう $x$＝天気、 $y$＝傘 なら、 雨と知れば 傘の確率が ガラッと変わる（$p(\text{傘}|\text{雨}) \ne p(\text{傘})$）→ <strong>独立でない</strong>、 $I>0$。 だから「独立 ⟺ $I=0$」が しっくりきます。</p>
+</div>
+
+<div class="callout gap">
 <span class="label">具体例: 相互情報量 =「片方を知ると、もう片方がどれだけ読めるか」</span>
 <p>$I[x,y] = H[y] - H[y|x]$ という形が いちばん直感的です。 「$y$ の不確実性 $H[y]$ が、 $x$ を知ったあとに $H[y|x]$ まで どれだけ減るか」、 その<strong>減少分</strong>が相互情報量。</p>
 <p>たとえば $x$＝「今日は雨か」、 $y$＝「道行く人が 傘を持っているか」。 雨の日は ほぼ全員 傘を持ち、 晴れの日は ほぼ持たない、 という強い関係があるなら、 <strong>天気 $x$ を知るだけで 傘 $y$ が ほぼ読める</strong> → $H[y|x]$ がぐっと小さくなり → $I$ は大きい。 逆に $x$＝「サイコロの目」と $y$＝「傘」のように 無関係なら、 $x$ を知っても $y$ の予想は 1ミリも 良くならない → $H[y|x] = H[y]$ → $I = 0$。 つまり <strong>$I = 0$ は「独立（知っても無意味）」と完全に同じ意味</strong>です。</p>
